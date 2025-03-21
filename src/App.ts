@@ -22,7 +22,7 @@ class App {
 
         camera.position.set(0, 2, 5);
 
-        const modelPath = 'src/assets/models/toy_jeep.glb';
+        const modelPath = "/assets/models/toy_jeep.glb";
         const loader = new GLTFLoader();
 
         loader.load(modelPath, (gltf) => {
