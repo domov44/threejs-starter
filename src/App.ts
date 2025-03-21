@@ -8,7 +8,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 class App {
     private mixer: THREE.AnimationMixer | undefined;
     private animationAction: THREE.AnimationAction | undefined;
-    private cameraController: CameraController;
+    private cameraController!: CameraController;
     private objectKeyboardController: KeyboardController | undefined;
 
     constructor() {
@@ -21,11 +21,6 @@ class App {
         const renderer = sceneBuilder.getRenderer();
 
         camera.position.set(0, 2, 5);
-
-        this.cameraController = new CameraController(camera, renderer.domElement);
-
-        const guiController = new GUIController();
-        guiController.addCameraControls(camera);
 
         const modelPath = 'src/assets/models/toy_jeep.glb';
         const loader = new GLTFLoader();
@@ -45,6 +40,11 @@ class App {
             model.scale.set(0.15, 0.15, 0.15);
 
             this.objectKeyboardController = new KeyboardController(model);
+
+            this.cameraController = new CameraController(camera, renderer.domElement, this.objectKeyboardController);
+
+            const guiController = new GUIController();
+            guiController.addCameraControls(camera);
 
             this.cameraController.setTarget(model);
 

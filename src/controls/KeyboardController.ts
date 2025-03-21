@@ -12,10 +12,10 @@ class KeyboardController {
     constructor(object: THREE.Object3D) {
         this.object = object;
         this.velocity = new THREE.Vector3(0, 0, 0);
-        this.acceleration = 0.002;
-        this.maxSpeed = 0.2;
+        this.acceleration = 0.004;
+        this.maxSpeed = 0.25;
         this.friction = 0.98;
-        this.turnSpeed = 0.03;
+        this.turnSpeed = 0.04;
         this.keys = {};
 
         window.addEventListener('keydown', (event) => this.keys[event.key] = true);
@@ -24,7 +24,6 @@ class KeyboardController {
 
     update() {
         if (this.keys['z']) {
-            console.log("z")
             this.velocity.z -= this.acceleration;
         } else if (this.keys['s']) {
             this.velocity.z += this.acceleration;
