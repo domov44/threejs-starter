@@ -22,7 +22,8 @@ class App {
         const renderer = sceneBuilder.getRenderer();
         const world = sceneBuilder.getWorld();
 
-        camera.position.set(0, 2, 5);
+        camera.position.set(20, 2, 5);
+        camera.rotation.x += 0.5;
 
         const modelPath = "/assets/models/toy_jeep.glb";
         const loader = new GLTFLoader();
@@ -38,7 +39,6 @@ class App {
                 this.animationAction.paused = true;
             }
 
-            model.position.set(0, 10, 0);
             model.scale.set(0.15, 0.15, 0.15);
 
             const modelPhysicsBody = this.createPhysicsForModel(model);

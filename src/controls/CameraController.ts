@@ -21,22 +21,23 @@ class CameraController {
 
     setTarget(object: THREE.Object3D) {
         this.targetObject = object;
+        this.updateCameraInitialAngle();
     }
 
     update() {
         if (this.targetObject) {
             const offsetVector = this.offset.clone();
-            
+
             const rotationMatrix = new THREE.Matrix4();
             rotationMatrix.extractRotation(this.targetObject.matrix);
-            
+
             offsetVector.applyMatrix4(rotationMatrix);
-            
+
             const targetCameraPosition = this.targetObject.position.clone().add(offsetVector);
             this.camera.position.lerp(targetCameraPosition, 0.1);
-            
+
             this.camera.lookAt(this.targetObject.position);
-            
+
             this.updateFOV();
         }
     }
@@ -47,12 +48,24 @@ class CameraController {
         const minFOV = 45;
 
         const maxSpeed = (this.keyboardController as any).maxSpeed || 0.2;
-        
+
         const speedFactor = speed / maxSpeed;
         const newFOV = THREE.MathUtils.lerp(minFOV, maxFOV, speedFactor);
 
         this.camera.fov = newFOV;
         this.camera.updateProjectionMatrix();
+    }
+
+    private updateCameraInitialAngle() {
+        if (this.targetObject) {
+            const initialRotation = new THREE.Euler(0, Math.PI / 4, 0);
+            this.camera.rotation.set(initialRotation.x, initialRotation.y, initialRotation.z);
+
+            const initialPosition = this.targetObject.position.clone().add(this.offset);
+            this.camera.position.copy(initialPosition);
+
+            this.camera.lookAt(this.targetObject.position);
+        }
     }
 }
 
