@@ -1,18 +1,24 @@
-import * as THREE from 'three';
+import * as CANNON from 'cannon';
 
 export class Floor {
-    object: THREE.Mesh;
+    physicsBody: CANNON.Body;
 
     constructor() {
-        const geometry = new THREE.PlaneGeometry(5, 2000);
-        const material = new THREE.MeshToonMaterial({ color: 0xffff00, side: THREE.DoubleSide });
-        this.object = new THREE.Mesh(geometry, material);
-        this.object.position.set(0, 0, 0);
-        this.object.rotation.x = -Math.PI / 2;
-        this.object.receiveShadow = true;
+        const shape = new CANNON.Plane();
+
+        this.physicsBody = new CANNON.Body({
+            mass: 0,
+            position: new CANNON.Vec3(0, 0, 0),
+        });
+
+        const quat = new CANNON.Quaternion();
+        quat.setFromEuler(-Math.PI / 2, 0, 0);
+        this.physicsBody.quaternion.set(quat.x, quat.y, quat.z, quat.w);
+
+        this.physicsBody.addShape(shape);
     }
 
-    addToScene(scene: THREE.Scene) {
-        scene.add(this.object);
+    addToWorld(world: CANNON.World) {
+        world.addBody(this.physicsBody);
     }
 }

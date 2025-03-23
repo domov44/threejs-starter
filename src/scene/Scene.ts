@@ -1,13 +1,12 @@
 import * as THREE from 'three';
-import { Cube } from '../Objects/Cube';
-import { Sphere } from '../Objects/Sphere';
+import * as CANNON from 'cannon';
 import { Floor } from '../Objects/Floor';
-import { Torus } from '../Objects/Torus';
 
 class Scene {
     private scene: THREE.Scene;
     private camera: THREE.PerspectiveCamera;
     private renderer: THREE.WebGLRenderer;
+    private world: CANNON.World;
 
     constructor() {
         this.scene = new THREE.Scene();
@@ -16,25 +15,25 @@ class Scene {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
 
+        this.world = new CANNON.World();
+        this.world.gravity.set(0, -9.82, 0);
+
         document.body.appendChild(this.renderer.domElement);
     }
 
     createObjects() {
-        // const cube = new Cube();
-        // const sphere = new Sphere();
-        // const torus = new Torus();
-        const plane = new Floor();
-
-        // cube.setPosition(-1, 0.5, 0);
-        // sphere.setPosition(1, 1, 0);
-        // torus.setPosition(3, 1, 0);
-
-        // cube.addToScene(this.scene);
-        // sphere.addToScene(this.scene);
-        plane.addToScene(this.scene);
-        // torus.addToScene(this.scene);
-
-        return;
+        const floor = new Floor();
+        floor.addToWorld(this.world);
+        
+        const geometry = new THREE.PlaneGeometry(100, 100);
+        const material = new THREE.MeshStandardMaterial({ color: 0xfff });
+        const plane = new THREE.Mesh(geometry, material);
+        
+        plane.rotation.x = -Math.PI / 2;
+        
+        plane.position.set(0, 0, 0);
+        
+        this.scene.add(plane);
     }
 
     createLight() {
@@ -54,6 +53,10 @@ class Scene {
 
     getRenderer(): THREE.WebGLRenderer {
         return this.renderer;
+    }
+
+    getWorld(): CANNON.World {
+        return this.world;
     }
 }
 
