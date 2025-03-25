@@ -37,7 +37,7 @@ class CameraController {
             offsetVector.applyMatrix4(rotationMatrix);
 
             const targetCameraPosition = this.targetObject.position.clone().add(offsetVector);
-            this.camera.position.lerp(targetCameraPosition, 0.2);
+            this.camera.position.lerp(targetCameraPosition, 0.1);
 
             this.camera.lookAt(this.targetObject.position);
 
