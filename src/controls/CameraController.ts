@@ -8,6 +8,7 @@ class CameraController {
     private targetObject: THREE.Object3D | null = null;
     private offset: THREE.Vector3;
     private keyboardController: KeyboardController;
+    private baseFOV: number;
 
     constructor(camera: THREE.PerspectiveCamera, rendererDomElement: HTMLElement, keyboardController: KeyboardController) {
         this.camera = camera;
@@ -17,6 +18,8 @@ class CameraController {
         this.controls.enabled = false;
 
         this.offset = new THREE.Vector3(0, 2, -5);
+        this.baseFOV = 45;
+        this.camera.fov = this.baseFOV;
     }
 
     setTarget(object: THREE.Object3D) {
@@ -34,7 +37,7 @@ class CameraController {
             offsetVector.applyMatrix4(rotationMatrix);
 
             const targetCameraPosition = this.targetObject.position.clone().add(offsetVector);
-            this.camera.position.lerp(targetCameraPosition, 0.1);
+            this.camera.position.lerp(targetCameraPosition, 0.2);
 
             this.camera.lookAt(this.targetObject.position);
 
@@ -44,13 +47,11 @@ class CameraController {
 
     private updateFOV() {
         const speed = Math.abs(this.keyboardController.getSpeed());
-        const maxFOV = 60;
-        const minFOV = 45;
+        const maxSpeed = 25;
+        const fovVariation = 5;
 
-        const maxSpeed = (this.keyboardController as any).maxSpeed || 0.2;
-
-        const speedFactor = speed / maxSpeed;
-        const newFOV = THREE.MathUtils.lerp(minFOV, maxFOV, speedFactor);
+        const speedFactor = Math.min(speed / maxSpeed, 1);
+        const newFOV = this.baseFOV + (fovVariation * speedFactor);
 
         this.camera.fov = newFOV;
         this.camera.updateProjectionMatrix();

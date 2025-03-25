@@ -11,6 +11,7 @@ class App {
     private animationAction: THREE.AnimationAction | undefined;
     private cameraController!: CameraController;
     private objectKeyboardController: KeyboardController | undefined;
+    private lastTime: number = 0;
 
     constructor() {
         const sceneBuilder = new Scene();
@@ -53,7 +54,10 @@ class App {
 
             this.cameraController.setTarget(model);
 
-            const animate = () => {
+            const animate = (currentTime: number) => {
+                const deltaTime = this.lastTime ? (currentTime - this.lastTime) / 1000 : 1 / 60;
+                this.lastTime = currentTime;
+
                 if (this.objectKeyboardController) {
                     this.objectKeyboardController.update();
 
@@ -72,7 +76,7 @@ class App {
                 this.cameraController.update();
 
                 if (this.mixer) {
-                    this.mixer.update(0.01);
+                    this.mixer.update(deltaTime);
                 }
 
                 model.position.copy(modelPhysicsBody.position);
@@ -82,7 +86,7 @@ class App {
                 threeQuat.set(cannonQuat.x, cannonQuat.y, cannonQuat.z, cannonQuat.w);
                 model.rotation.setFromQuaternion(threeQuat);
 
-                world.step(1 / 60);
+                world.step(deltaTime);
                 renderer.render(scene, camera);
                 requestAnimationFrame(animate);
             };
@@ -99,15 +103,11 @@ class App {
             mass: 1,
             position: new CANNON.Vec3(0, 3, 0),
         });
-    
+
         body.addShape(shape);
-    
-        // const debugMesh = new THREE.Mesh(new THREE.BoxGeometry(5, 10, 8), new THREE.MeshBasicMaterial({ color: 0xfff }));
-        // model.add(debugMesh);
-    
+
         return body;
     }
-    
 }
 
 export { App };

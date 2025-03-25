@@ -11,17 +11,19 @@ class KeyboardController {
     private minSpeedForTurning: number;
     private keys: { [key: string]: boolean };
     private physicsBody: CANNON.Body;
+    private lastUpdateTime: number;
 
     constructor(object: THREE.Object3D, physicsBody: CANNON.Body) {
         this.object = object;
         this.velocity = new THREE.Vector3(0, 0, 0);
-        this.acceleration = 0.005;
-        this.maxSpeed = 0.50;
-        this.friction = 0.98;
-        this.turnSpeed = 0.04;
-        this.minSpeedForTurning = 0.02;
+        this.acceleration = 20;
+        this.maxSpeed = 25;
+        this.friction = 0.95;
+        this.turnSpeed = 2;
+        this.minSpeedForTurning = 0.1;
         this.keys = {};
         this.physicsBody = physicsBody;
+        this.lastUpdateTime = performance.now();
 
         this.physicsBody.fixedRotation = false;
         this.physicsBody.updateMassProperties();
@@ -31,26 +33,32 @@ class KeyboardController {
     }
 
     update() {
+        const currentTime = performance.now();
+        const deltaTime = (currentTime - this.lastUpdateTime) / 1000;
+        this.lastUpdateTime = currentTime;
+
+        let isAccelerating = false;
         if (this.keys['z']) {
-            this.velocity.z -= this.acceleration;
+            this.velocity.z = Math.max(this.velocity.z - this.acceleration * deltaTime, -this.maxSpeed);
+            isAccelerating = true;
         } else if (this.keys['s']) {
-            this.velocity.z += this.acceleration;
+            this.velocity.z = Math.min(this.velocity.z + this.acceleration * deltaTime, this.maxSpeed);
+            isAccelerating = true;
+        } else {
+            this.velocity.z *= Math.pow(this.friction, deltaTime * 60);
         }
 
-        this.velocity.clampLength(0, this.maxSpeed);
         const speed = Math.abs(this.velocity.z);
         const directionFactor = this.velocity.z !== 0 ? -Math.sign(this.velocity.z) : 0;
 
         if (speed > this.minSpeedForTurning) {
-            const speedFactor = Math.pow((this.maxSpeed - speed) / this.maxSpeed, 0.5);
-
             if (this.keys['q']) {
-                const rotationAmount = this.turnSpeed * speedFactor * directionFactor;
+                const rotationAmount = this.turnSpeed * deltaTime;
                 const rotationY = new CANNON.Quaternion();
                 rotationY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), rotationAmount);
                 this.physicsBody.quaternion = rotationY.mult(this.physicsBody.quaternion);
             } else if (this.keys['d']) {
-                const rotationAmount = -this.turnSpeed * speedFactor * directionFactor;
+                const rotationAmount = -this.turnSpeed * deltaTime;
                 const rotationY = new CANNON.Quaternion();
                 rotationY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), rotationAmount);
                 this.physicsBody.quaternion = rotationY.mult(this.physicsBody.quaternion);
@@ -60,9 +68,7 @@ class KeyboardController {
         const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.object.quaternion);
         const cannonForward = new CANNON.Vec3(forward.x, forward.y, forward.z);
 
-        this.physicsBody.position.vadd(cannonForward.scale(this.velocity.z, new CANNON.Vec3()), this.physicsBody.position);
-
-        this.velocity.multiplyScalar(this.friction);
+        this.physicsBody.position.vadd(cannonForward.scale(this.velocity.z * deltaTime, new CANNON.Vec3()), this.physicsBody.position);
 
         this.object.position.copy(this.physicsBody.position as any);
         const quat = this.physicsBody.quaternion;
