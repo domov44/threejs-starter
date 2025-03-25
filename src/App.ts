@@ -64,11 +64,12 @@ class App {
                     const speed = this.objectKeyboardController.getSpeed();
 
                     if (this.animationAction) {
-                        if (speed > 0.01 || speed < -0.01) {
+                        if (Math.abs(speed) > 0.1) {
                             this.animationAction.paused = false;
-                            this.animationAction.timeScale = Math.abs(speed) * 10;
+                            this.animationAction.timeScale = Math.abs(speed) * 2;
                         } else {
                             this.animationAction.paused = true;
+                            this.animationAction.time = 0;
                         }
                     }
                 }
