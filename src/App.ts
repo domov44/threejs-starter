@@ -3,15 +3,13 @@ import { CameraController } from './controls/CameraController';
 import { GUIController } from './debug/GuiController';
 import { KeyboardController } from './controls/KeyboardController';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import * as CANNON from 'cannon';
+import { Model } from './Objects/Model';
 
 class App {
-    private mixer: THREE.AnimationMixer | undefined;
-    private animationAction: THREE.AnimationAction | undefined;
+    private lastTime: number = 0;
+    private model!: Model;
     private cameraController!: CameraController;
     private objectKeyboardController: KeyboardController | undefined;
-    private lastTime: number = 0;
 
     constructor() {
         const sceneBuilder = new Scene();
@@ -26,88 +24,53 @@ class App {
         camera.position.set(20, 2, 5);
         camera.rotation.x += 0.5;
 
-        const modelPath = "/assets/models/toy_jeep.glb";
-        const loader = new GLTFLoader();
+        this.model = new Model(scene, world);
 
-        loader.load(modelPath, (gltf) => {
-            const model = gltf.scene;
-            scene.add(model);
+        this.model.loadModel("/assets/models/toy_jeep.glb").then(() => {
+            const modelMesh = this.model.getMesh();
+            const modelPhysicsBody = this.model.getPhysicsBody();
 
-            this.mixer = new THREE.AnimationMixer(model);
-            if (gltf.animations.length > 0) {
-                this.animationAction = this.mixer.clipAction(gltf.animations[0]);
-                this.animationAction.play();
-                this.animationAction.paused = true;
+            if (modelMesh && modelPhysicsBody) {
+                this.objectKeyboardController = new KeyboardController(modelMesh, modelPhysicsBody);
+
+                this.cameraController = new CameraController(camera, renderer.domElement, this.objectKeyboardController);
+
+                const guiController = new GUIController();
+                guiController.addCameraControls(camera);
+
+                this.cameraController.setTarget(modelMesh);
+
+                this.startAnimationLoop(renderer, scene, camera, world);
             }
-
-            model.scale.set(0.15, 0.15, 0.15);
-
-            const modelPhysicsBody = this.createPhysicsForModel(model);
-            world.addBody(modelPhysicsBody);
-
-            this.objectKeyboardController = new KeyboardController(model, modelPhysicsBody);
-
-            this.cameraController = new CameraController(camera, renderer.domElement, this.objectKeyboardController);
-
-            const guiController = new GUIController();
-            guiController.addCameraControls(camera);
-
-            this.cameraController.setTarget(model);
-
-            const animate = (currentTime: number) => {
-                const deltaTime = this.lastTime ? (currentTime - this.lastTime) / 1000 : 1 / 60;
-                this.lastTime = currentTime;
-
-                if (this.objectKeyboardController) {
-                    this.objectKeyboardController.update();
-
-                    const speed = this.objectKeyboardController.getSpeed();
-
-                    if (this.animationAction) {
-                        if (Math.abs(speed) > 0.1) {
-                            this.animationAction.paused = false;
-                            this.animationAction.timeScale = Math.abs(speed) * 2;
-                        } else {
-                            this.animationAction.paused = true;
-                            this.animationAction.time = 0;
-                        }
-                    }
-                }
-
-                this.cameraController.update();
-
-                if (this.mixer) {
-                    this.mixer.update(deltaTime);
-                }
-
-                model.position.copy(modelPhysicsBody.position);
-
-                const cannonQuat = modelPhysicsBody.quaternion;
-                const threeQuat = new THREE.Quaternion();
-                threeQuat.set(cannonQuat.x, cannonQuat.y, cannonQuat.z, cannonQuat.w);
-                model.rotation.setFromQuaternion(threeQuat);
-
-                world.step(deltaTime);
-                renderer.render(scene, camera);
-                requestAnimationFrame(animate);
-            };
-
-            requestAnimationFrame(animate);
-        }, undefined, (error) => {
-            console.error("Erreur lors du chargement du modèle GLB :", error);
+        }).catch(error => {
+            console.error("Failed to load model:", error);
         });
     }
 
-    private createPhysicsForModel(model: THREE.Group): CANNON.Body {
-        const shape = new CANNON.Box(new CANNON.Vec3(5, 0, 8));
-        const body = new CANNON.Body({
-            mass: 1,
-            position: new CANNON.Vec3(0, 3, 0),
-        });
+    private startAnimationLoop(
+        renderer: THREE.WebGLRenderer, 
+        scene: THREE.Scene, 
+        camera: THREE.Camera, 
+        world: CANNON.World
+    ): void {
+        const animate = (currentTime: number) => {
+            const deltaTime = this.lastTime ? (currentTime - this.lastTime) / 1000 : 1 / 60;
+            this.lastTime = currentTime;
 
-        body.addShape(shape);
+            if (this.objectKeyboardController) {
+                this.objectKeyboardController.update();
+                const speed = this.objectKeyboardController.getSpeed();
 
-        return body;
+                this.model.update(deltaTime, speed);
+            }
+
+            this.cameraController.update();
+            world.step(deltaTime);
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        };
+
+        requestAnimationFrame(animate);
     }
 }
 
