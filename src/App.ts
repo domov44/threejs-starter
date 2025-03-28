@@ -32,17 +32,18 @@ class App {
         const camera = sceneBuilder.getCamera();
         const renderer = sceneBuilder.getRenderer();
         const world = sceneBuilder.getWorld() as CANNON.World;
-        const debuggerEnabled = import.meta.env.VITE_DEBUG_ENABLED === 'true'; // Check if debugging is enabled
+        const debuggerEnabled = import.meta.env.VITE_DEBUG_ENABLED === 'true';
 
         this.wallLoader = new Wall(scene, world);
 
         this.wallLoader.addWall(2, 0.5, 8.2, 3.5, 1, 15.1);
-        this.wallLoader.addWall(7.8, 0.5, 10, 8, 1, 12);
+        this.wallLoader.addWall(6.9, 0.5, 10, 6.3, 1, 11.2);
+        this.wallLoader.addWall(11.65, 0.6, 12.4, 0.2, 1.1, 2.8);
+        
 
         this.model = new Model(scene, world);
         this.map = new Map(scene, world);
 
-        // Initialize CannonDebugger if debugging is enabled
         if (debuggerEnabled) {
             this.cannonDebug = new CannonDebug(scene, world, true);
         }

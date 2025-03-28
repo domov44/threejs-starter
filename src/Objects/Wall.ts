@@ -39,25 +39,25 @@ export class Wall {
         };
     
         const wallFolder = this.gui.addFolder(`Wall at (${x}, ${y}, ${z})`);
-        wallFolder.add(this.wallParams[wallId], 'positionX', -10, 10).onChange((value) => {
+        wallFolder.add(this.wallParams[wallId], 'positionX', -50, 50).onChange((value) => {
             body.position.x = value;
         });
-        wallFolder.add(this.wallParams[wallId], 'positionY', -10, 10).onChange((value) => {
+        wallFolder.add(this.wallParams[wallId], 'positionY', -50, 50).onChange((value) => {
             body.position.y = value;
         });
-        wallFolder.add(this.wallParams[wallId], 'positionZ', -10, 10).onChange((value) => {
+        wallFolder.add(this.wallParams[wallId], 'positionZ', -50, 50).onChange((value) => {
             body.position.z = value;
         });
     
-        wallFolder.add(this.wallParams[wallId], 'width', 1, 10).onChange((value) => {
+        wallFolder.add(this.wallParams[wallId], 'width', 0.1, 50).onChange((value) => {
             shape.halfExtents.set(value / 2, shape.halfExtents.y, shape.halfExtents.z);
         });
     
-        wallFolder.add(this.wallParams[wallId], 'height', 1, 10).onChange((value) => {
+        wallFolder.add(this.wallParams[wallId], 'height', 0.1, 50).onChange((value) => {
             shape.halfExtents.set(shape.halfExtents.x, value / 2, shape.halfExtents.z);
         });
     
-        wallFolder.add(this.wallParams[wallId], 'depth', 1, 30).onChange((value) => {
+        wallFolder.add(this.wallParams[wallId], 'depth', 0.1, 50).onChange((value) => {
             shape.halfExtents.set(shape.halfExtents.x, shape.halfExtents.y, value / 2);
         });
     
