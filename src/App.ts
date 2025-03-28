@@ -3,6 +3,7 @@ import { CameraController } from './controls/CameraController';
 import { GUIController } from './debug/GuiController';
 import { KeyboardController } from './controls/KeyboardController';
 import * as THREE from 'three';
+import * as CANNON from 'cannon-es';
 import { Model } from './Objects/Model';
 
 class App {
@@ -19,7 +20,7 @@ class App {
         const scene = sceneBuilder.getScene();
         const camera = sceneBuilder.getCamera();
         const renderer = sceneBuilder.getRenderer();
-        const world = sceneBuilder.getWorld();
+        const world = sceneBuilder.getWorld() as CANNON.World;
 
         camera.position.set(20, 2, 5);
         camera.rotation.x += 0.5;
@@ -48,9 +49,9 @@ class App {
     }
 
     private startAnimationLoop(
-        renderer: THREE.WebGLRenderer, 
-        scene: THREE.Scene, 
-        camera: THREE.Camera, 
+        renderer: THREE.WebGLRenderer,
+        scene: THREE.Scene,
+        camera: THREE.Camera,
         world: CANNON.World
     ): void {
         const animate = (currentTime: number) => {
@@ -60,12 +61,11 @@ class App {
             if (this.objectKeyboardController) {
                 this.objectKeyboardController.update();
                 const speed = this.objectKeyboardController.getSpeed();
-
                 this.model.update(deltaTime, speed);
             }
 
             this.cameraController.update();
-            world.step(deltaTime);
+            world.step(1 / 60);
             renderer.render(scene, camera);
             requestAnimationFrame(animate);
         };

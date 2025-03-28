@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import * as CANNON from 'cannon';
+import * as CANNON from 'cannon-es';
 
 export class Model {
     private scene: THREE.Scene;
