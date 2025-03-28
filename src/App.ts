@@ -15,6 +15,10 @@ class App {
     private objectKeyboardController: KeyboardController | undefined;
     private map!: Map;
     private wallLoader: Wall;
+    private fps: number = 0;
+    private fpsInterval: number = 1;
+    private fpsCount: number = 0;
+    private lastFpsTime: number = 0;
 
     constructor() {
         const sceneBuilder = new Scene();
@@ -31,9 +35,6 @@ class App {
 
         this.wallLoader.addWall(2, 0.5, 8.2, 3.5, 1, 15.1);
         this.wallLoader.addWall(7.8, 0.5, 10, 8, 1, 12);
-
-        camera.position.set(20, 2, 5);
-        camera.rotation.x += 0.5;
 
         this.model = new Model(scene, world);
         this.map = new Map(scene, world);
@@ -68,9 +69,6 @@ class App {
                         this.objectKeyboardController
                     );
 
-                    const guiController = new GUIController();
-                    guiController.addCameraControls(camera);
-
                     this.cameraController.setTarget(modelMesh);
 
                     this.startAnimationLoop(renderer, scene, camera, world);
@@ -90,10 +88,16 @@ class App {
         world: CANNON.World
     ): void {
         const animate = (currentTime: number) => {
-            const deltaTime = this.lastTime
-                ? (currentTime - this.lastTime) / 1000
-                : 1 / 60;
+            const deltaTime = (currentTime - this.lastTime) / 1000;
             this.lastTime = currentTime;
+
+            this.fpsCount++;
+            if (currentTime - this.lastFpsTime >= 1000) {
+                this.fps = this.fpsCount;
+                this.fpsCount = 0;
+                this.lastFpsTime = currentTime;
+                console.log(`FPS: ${this.fps}`);
+            }
 
             if (this.objectKeyboardController) {
                 this.objectKeyboardController.update();
@@ -103,7 +107,6 @@ class App {
 
             this.cameraController.update();
             world.step(1 / 60);
-            this.wallLoader.animate();
 
             renderer.render(scene, camera);
             requestAnimationFrame(animate);

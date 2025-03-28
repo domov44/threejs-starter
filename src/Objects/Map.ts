@@ -9,7 +9,7 @@ export class Map {
 
     constructor(scene: THREE.Scene, world: CANNON.World) {
         this.scene = scene;
-        this.world = world;  // On utilise ici le monde physique que tu passes
+        this.world = world;
     }
 
     public async loadMap(mapPath: string): Promise<void> {

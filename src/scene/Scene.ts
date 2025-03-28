@@ -10,10 +10,9 @@ class Scene {
 
     constructor() {
         this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
-            powerPreference: 'high-performance'
         });
         
         this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -24,9 +23,6 @@ class Scene {
         this.world.gravity.set(0, -9.82, 0);
 
         document.body.appendChild(this.renderer.domElement);
-
-        this.camera.position.set(0, 5, 10);
-        this.camera.lookAt(0, 0, 0);
     }
 
     createObjects() {

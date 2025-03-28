@@ -7,8 +7,8 @@ export class Floor {
         const shape = new CANNON.Plane();
 
         this.physicsBody = new CANNON.Body({
-            mass: 0,
-            position: new CANNON.Vec3(0, 0, 0),
+            type: CANNON.Body.STATIC,
+            shape: new CANNON.Plane(),
         });
 
         const quat = new CANNON.Quaternion();

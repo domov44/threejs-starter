@@ -47,8 +47,6 @@ export class Model {
         this.scene.add(this.modelMesh);
     }
 
-
-
     private setupAnimations(gltf: any): void {
         if (!this.modelMesh || gltf.animations.length === 0) return;
 
@@ -76,7 +74,7 @@ export class Model {
 
         this.modelBody = new CANNON.Body({
             mass: 1,
-            position: new CANNON.Vec3(10, 3, 0),
+            position: new CANNON.Vec3(0, 0, 0),
         });
 
         this.modelBody.addShape(shape);
@@ -85,7 +83,7 @@ export class Model {
 
     public update(deltaTime: number, speed: number): void {
         if (!this.modelMesh || !this.modelBody) return;
-
+    
         if (this.animationAction) {
             if (Math.abs(speed) > 0.1) {
                 this.animationAction.paused = false;
@@ -95,24 +93,18 @@ export class Model {
                 this.animationAction.time = 0;
             }
         }
-
+    
         this.modelMesh.position.copy(this.modelBody.position);
-
+    
         const yOffset = 0.4;
         this.modelMesh.position.y -= yOffset;
-
-        const cannonQuat = this.modelBody.quaternion;
-        const threeQuat = new THREE.Quaternion();
-        threeQuat.set(cannonQuat.x, cannonQuat.y, cannonQuat.z, cannonQuat.w);
-        this.modelMesh.rotation.setFromQuaternion(threeQuat);
-
+        // console.log(`Model position: x: ${this.modelMesh.position.x}, y: ${this.modelMesh.position.y}, z: ${this.modelMesh.position.z}`);
+    
         if (this.mixer) {
             this.mixer.update(deltaTime);
         }
     }
-
-
-
+    
     public getPhysicsBody(): CANNON.Body | null {
         return this.modelBody;
     }

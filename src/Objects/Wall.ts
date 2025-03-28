@@ -71,10 +71,4 @@ export class Wall {
         };
     }
     
-
-    animate() {
-        requestAnimationFrame(() => this.animate());
-        this.world.step(1 / 60);
-        this.debugger.update();
-    }
 }
