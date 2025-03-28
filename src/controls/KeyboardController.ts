@@ -16,8 +16,8 @@ class KeyboardController {
     constructor(object: THREE.Object3D, physicsBody: CANNON.Body) {
         this.object = object;
         this.velocity = new THREE.Vector3(0, 0, 0);
-        this.acceleration = 8;
-        this.maxSpeed = 15;
+        this.acceleration = 3;
+        this.maxSpeed = 10;
         this.friction = 0.95;
         this.turnSpeed = 2;
         this.minSpeedForTurning = 0.1;
