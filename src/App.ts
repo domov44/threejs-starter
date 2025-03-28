@@ -1,4 +1,3 @@
-// App.ts
 import { Scene } from './scene/Scene';
 import { CameraController } from './controls/CameraController';
 import { GUIController } from './debug/GuiController';
@@ -28,10 +27,10 @@ class App {
         const world = sceneBuilder.getWorld() as CANNON.World;
 
         const debuggerEnabled = false;
-
         this.wallLoader = new Wall(scene, world, debuggerEnabled);
 
-        this.wallLoader.wall();
+        this.wallLoader.addWall(2, 0.5, 8.2, 3.5, 1, 15.1);
+        this.wallLoader.addWall(7.8, 0.5, 10, 8, 1, 12);
 
         camera.position.set(20, 2, 5);
         camera.rotation.x += 0.5;
@@ -51,7 +50,6 @@ class App {
         this.map.loadMap("/assets/models/map.glb")
             .then(() => {
                 console.log("Map loaded successfully!");
-
                 return this.model.loadModel("/assets/models/toy_jeep.glb");
             })
             .then(() => {
