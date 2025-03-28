@@ -30,14 +30,7 @@ export class Wall {
         });
         body.addShape(shape);
         this.world.addBody(body);
-
-        const geometry = new THREE.BoxGeometry(width, height, depth);
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(x, y, z);
-        this.scene.add(mesh);
-
-
+        
         const wallId = `${x}-${y}-${z}`;
         this.wallParams[wallId] = {
             positionX: x,
@@ -47,52 +40,37 @@ export class Wall {
             height: height,
             depth: depth,
         };
-
+    
         const wallFolder = this.gui.addFolder(`Wall at (${x}, ${y}, ${z})`);
         wallFolder.add(this.wallParams[wallId], 'positionX', -10, 10).onChange((value) => {
-            mesh.position.x = value;
             body.position.x = value;
         });
         wallFolder.add(this.wallParams[wallId], 'positionY', -10, 10).onChange((value) => {
-            mesh.position.y = value;
             body.position.y = value;
         });
         wallFolder.add(this.wallParams[wallId], 'positionZ', -10, 10).onChange((value) => {
-            mesh.position.z = value;
             body.position.z = value;
         });
-
+    
         wallFolder.add(this.wallParams[wallId], 'width', 1, 10).onChange((value) => {
-            const newGeometry = new THREE.BoxGeometry(value, mesh.geometry.parameters.height, mesh.geometry.parameters.depth);
-            mesh.geometry.dispose();
-            mesh.geometry = newGeometry;
-
             shape.halfExtents.set(value / 2, shape.halfExtents.y, shape.halfExtents.z);
         });
-
+    
         wallFolder.add(this.wallParams[wallId], 'height', 1, 10).onChange((value) => {
-            const newGeometry = new THREE.BoxGeometry(mesh.geometry.parameters.width, value, mesh.geometry.parameters.depth);
-            mesh.geometry.dispose();
-            mesh.geometry = newGeometry;
-
             shape.halfExtents.set(shape.halfExtents.x, value / 2, shape.halfExtents.z);
         });
-
+    
         wallFolder.add(this.wallParams[wallId], 'depth', 1, 30).onChange((value) => {
-            const newGeometry = new THREE.BoxGeometry(mesh.geometry.parameters.width, mesh.geometry.parameters.height, value);
-            mesh.geometry.dispose();
-            mesh.geometry = newGeometry;
-
             shape.halfExtents.set(shape.halfExtents.x, shape.halfExtents.y, value / 2);
         });
-
+    
         wallFolder.open();
-
+    
         return {
             body: body,
-            mesh: mesh,
         };
     }
+    
 
     animate() {
         requestAnimationFrame(() => this.animate());

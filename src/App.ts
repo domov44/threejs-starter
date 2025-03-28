@@ -25,8 +25,8 @@ class App {
         const camera = sceneBuilder.getCamera();
         const renderer = sceneBuilder.getRenderer();
         const world = sceneBuilder.getWorld() as CANNON.World;
+        const debuggerEnabled = import.meta.env.VITE_DEBUG_ENABLED === 'true';
 
-        const debuggerEnabled = false;
         this.wallLoader = new Wall(scene, world, debuggerEnabled);
 
         this.wallLoader.addWall(2, 0.5, 8.2, 3.5, 1, 15.1);
