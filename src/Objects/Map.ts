@@ -36,6 +36,9 @@ export class Map {
     private setupMapProperties(): void {
         if (!this.mapMesh) return;
 
+        const scaleFactor = 0.4;
+        this.mapMesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
         this.mapMesh.traverse((child) => {
             if (child instanceof THREE.Mesh) {
                 child.castShadow = true;
@@ -49,7 +52,9 @@ export class Map {
     private createPhysicsBody(): void {
         if (!this.mapMesh) return;
 
-        const shape = new CANNON.Box(new CANNON.Vec3(10, 1, 10));
+        const scaleFactor = 0.1;
+        const shape = new CANNON.Box(new CANNON.Vec3(10 * scaleFactor, 1 * scaleFactor, 10 * scaleFactor));
+
         this.mapBody = new CANNON.Body({
             mass: 0,
             position: new CANNON.Vec3(0, 0, 0),

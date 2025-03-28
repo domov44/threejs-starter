@@ -5,12 +5,14 @@ import { KeyboardController } from './controls/KeyboardController';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { Model } from './Objects/Model';
+import { Map } from './Objects/Map';
 
 class App {
     private lastTime: number = 0;
     private model!: Model;
     private cameraController!: CameraController;
     private objectKeyboardController: KeyboardController | undefined;
+    private map!: Map;
 
     constructor() {
         const sceneBuilder = new Scene();
@@ -27,24 +29,32 @@ class App {
 
         this.model = new Model(scene, world);
 
-        this.model.loadModel("/assets/models/toy_jeep.glb").then(() => {
-            const modelMesh = this.model.getMesh();
-            const modelPhysicsBody = this.model.getPhysicsBody();
+        this.map = new Map(scene, world);
 
-            if (modelMesh && modelPhysicsBody) {
-                this.objectKeyboardController = new KeyboardController(modelMesh, modelPhysicsBody);
+        this.map.loadMap("/assets/models/map.glb").then(() => {
+            console.log("Map loaded successfully!");
 
-                this.cameraController = new CameraController(camera, renderer.domElement, this.objectKeyboardController);
+            this.model.loadModel("/assets/models/toy_jeep.glb").then(() => {
+                const modelMesh = this.model.getMesh();
+                const modelPhysicsBody = this.model.getPhysicsBody();
 
-                const guiController = new GUIController();
-                guiController.addCameraControls(camera);
+                if (modelMesh && modelPhysicsBody) {
+                    this.objectKeyboardController = new KeyboardController(modelMesh, modelPhysicsBody);
 
-                this.cameraController.setTarget(modelMesh);
+                    this.cameraController = new CameraController(camera, renderer.domElement, this.objectKeyboardController);
 
-                this.startAnimationLoop(renderer, scene, camera, world);
-            }
+                    const guiController = new GUIController();
+                    guiController.addCameraControls(camera);
+
+                    this.cameraController.setTarget(modelMesh);
+
+                    this.startAnimationLoop(renderer, scene, camera, world);
+                }
+            }).catch(error => {
+                console.error("Failed to load model:", error);
+            });
         }).catch(error => {
-            console.error("Failed to load model:", error);
+            console.error("Failed to load map:", error);
         });
     }
 

@@ -24,16 +24,6 @@ class Scene {
     createObjects() {
         const floor = new Floor();
         floor.addToWorld(this.world);
-        
-        const geometry = new THREE.PlaneGeometry(100, 100);
-        const material = new THREE.MeshStandardMaterial({ color: 0xfff });
-        const plane = new THREE.Mesh(geometry, material);
-        
-        plane.rotation.x = -Math.PI / 2;
-        
-        plane.position.set(0, 0, 0);
-        
-        this.scene.add(plane);
     }
 
     createLight() {
