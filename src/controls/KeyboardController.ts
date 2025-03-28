@@ -13,6 +13,10 @@ class KeyboardController {
     private physicsBody: CANNON.Body;
     private lastUpdateTime: number;
 
+    private sound: THREE.Audio;
+    private listener: THREE.AudioListener;
+    private audioLoader: THREE.AudioLoader;
+
     constructor(object: THREE.Object3D, physicsBody: CANNON.Body) {
         this.object = object;
         this.velocity = new THREE.Vector3(0, 0, 0);
@@ -24,6 +28,18 @@ class KeyboardController {
         this.keys = {};
         this.physicsBody = physicsBody;
         this.lastUpdateTime = performance.now();
+
+        this.listener = new THREE.AudioListener();
+        this.object.add(this.listener);
+        this.audioLoader = new THREE.AudioLoader();
+        this.sound = new THREE.Audio(this.listener);
+
+        this.audioLoader.load('/motor.wav', (buffer) => {
+            this.sound.setBuffer(buffer);
+            this.sound.setLoop(true);
+            this.sound.setVolume(0);
+            this.sound.play();
+        });
 
         this.physicsBody.fixedRotation = false;
         this.physicsBody.updateMassProperties();
@@ -74,6 +90,14 @@ class KeyboardController {
         const quat = this.physicsBody.quaternion;
         const threeQuat = new THREE.Quaternion(quat.x, quat.y, quat.z, quat.w);
         this.object.rotation.setFromQuaternion(threeQuat);
+
+        if (this.sound.isPlaying) {
+            const volume = Math.min(speed / this.maxSpeed, 1);
+            const pitch = 1 + (speed / this.maxSpeed) * 0.5;
+
+            this.sound.setVolume(volume);
+            this.sound.setPlaybackRate(pitch);
+        }
     }
 
     getSpeed(): number {
