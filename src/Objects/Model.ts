@@ -70,7 +70,7 @@ export class Model {
     private createPhysicsBody(): void {
         if (!this.modelMesh) return;
 
-        const shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.4, 0.7));
+        const shape = new CANNON.Box(new CANNON.Vec3(0.42, 0.4, 0.7));
 
         this.modelBody = new CANNON.Body({
             mass: 1,
@@ -96,7 +96,7 @@ export class Model {
     
         this.modelMesh.position.copy(this.modelBody.position);
     
-        const yOffset = 0.4;
+        const yOffset = 0.42;
         this.modelMesh.position.y -= yOffset;
         // console.log(`Model position: x: ${this.modelMesh.position.x}, y: ${this.modelMesh.position.y}, z: ${this.modelMesh.position.z}`);
     

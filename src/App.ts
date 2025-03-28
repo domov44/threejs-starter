@@ -39,6 +39,11 @@ class App {
         this.wallLoader.addWall(2, 0.5, 8.2, 3.5, 1, 15.1);
         this.wallLoader.addWall(6.9, 0.5, 10, 6.3, 1, 11.2);
         this.wallLoader.addWall(11.65, 0.6, 12.4, 0.2, 1.1, 2.8);
+        this.wallLoader.addWall(10.03, 0.6, -18, 1.3, 1.2, 2.3);
+        this.wallLoader.addWall(9.7, 0.6, -14, 1.3, 1.2, 2.2);
+        this.wallLoader.addWall(4.7, 2.2, -16, 4.2, 4.4, 4.4);
+        this.wallLoader.addWall(11.4, 0.3, -9.9, 0.7, 0.6, 1.1);
+        this.wallLoader.addWall(6.5, 1.5, -8, 8.8, 3, 5.7);
         
 
         this.model = new Model(scene, world);
