@@ -6,15 +6,12 @@ import * as dat from 'dat.gui';
 export class Wall {
     private scene: THREE.Scene;
     private world: CANNON.World;
-    private debugger: CannonDebug;
     private gui: dat.GUI;
     private wallParams: { [key: string]: any } = {};
 
-    constructor(scene: THREE.Scene, world: CANNON.World, debuggerEnabled: boolean) {
+    constructor(scene: THREE.Scene, world: CANNON.World) {
         this.scene = scene;
         this.world = world;
-
-        this.debugger = new CannonDebug(scene, world, debuggerEnabled);
         this.gui = new dat.GUI();
     }
 

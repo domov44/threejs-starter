@@ -7,6 +7,7 @@ import * as CANNON from 'cannon-es';
 import { Model } from './Objects/Model';
 import { Map } from './Objects/Map';
 import { Wall } from './Objects/Wall';
+import { CannonDebug } from './debug/CannonDebug';
 
 class App {
     private lastTime: number = 0;
@@ -19,6 +20,8 @@ class App {
     private fpsInterval: number = 1;
     private fpsCount: number = 0;
     private lastFpsTime: number = 0;
+    
+    private cannonDebug: CannonDebug | undefined;
 
     constructor() {
         const sceneBuilder = new Scene();
@@ -29,15 +32,20 @@ class App {
         const camera = sceneBuilder.getCamera();
         const renderer = sceneBuilder.getRenderer();
         const world = sceneBuilder.getWorld() as CANNON.World;
-        const debuggerEnabled = import.meta.env.VITE_DEBUG_ENABLED === 'true';
+        const debuggerEnabled = import.meta.env.VITE_DEBUG_ENABLED === 'true'; // Check if debugging is enabled
 
-        this.wallLoader = new Wall(scene, world, debuggerEnabled);
+        this.wallLoader = new Wall(scene, world);
 
         this.wallLoader.addWall(2, 0.5, 8.2, 3.5, 1, 15.1);
         this.wallLoader.addWall(7.8, 0.5, 10, 8, 1, 12);
 
         this.model = new Model(scene, world);
         this.map = new Map(scene, world);
+
+        // Initialize CannonDebugger if debugging is enabled
+        if (debuggerEnabled) {
+            this.cannonDebug = new CannonDebug(scene, world, true);
+        }
 
         this.initializeScene(renderer, scene, camera, world);
     }
@@ -107,6 +115,11 @@ class App {
 
             this.cameraController.update();
             world.step(1 / 60);
+
+            // Update CannonDebugger if it's enabled
+            if (this.cannonDebug) {
+                this.cannonDebug.update();
+            }
 
             renderer.render(scene, camera);
             requestAnimationFrame(animate);
