@@ -6,11 +6,10 @@ export class Map {
     private scene: THREE.Scene;
     private world: CANNON.World;
     private mapMesh: THREE.Group | null = null;
-    private mapBody: CANNON.Body | null = null;
 
     constructor(scene: THREE.Scene, world: CANNON.World) {
         this.scene = scene;
-        this.world = world;
+        this.world = world;  // On utilise ici le monde physique que tu passes
     }
 
     public async loadMap(mapPath: string): Promise<void> {
@@ -21,7 +20,6 @@ export class Map {
                 (gltf) => {
                     this.mapMesh = gltf.scene;
                     this.setupMapProperties();
-                    this.createPhysicsBody();
                     resolve();
                 },
                 undefined,
@@ -49,26 +47,11 @@ export class Map {
         this.scene.add(this.mapMesh);
     }
 
-    private createPhysicsBody(): void {
-        if (!this.mapMesh) return;
-
-        const scaleFactor = 0.1;
-        const shape = new CANNON.Box(new CANNON.Vec3(10 * scaleFactor, 1 * scaleFactor, 10 * scaleFactor));
-
-        this.mapBody = new CANNON.Body({
-            mass: 0,
-            position: new CANNON.Vec3(0, 0, 0),
-        });
-
-        this.mapBody.addShape(shape);
-        this.world.addBody(this.mapBody);
-    }
-
-    public getPhysicsBody(): CANNON.Body | null {
-        return this.mapBody;
-    }
-
     public getMesh(): THREE.Group | null {
         return this.mapMesh;
+    }
+
+    public getPhysicsWorld(): CANNON.World {
+        return this.world;
     }
 }

@@ -27,6 +27,8 @@ export class Model {
                     this.createPhysicsBody();
                     this.setupAnimations(gltf);
 
+                    this.addShadowsToModel();
+
                     resolve();
                 },
                 undefined,
@@ -45,18 +47,7 @@ export class Model {
         this.scene.add(this.modelMesh);
     }
 
-    private createPhysicsBody(): void {
-        if (!this.modelMesh) return;
 
-        const shape = new CANNON.Box(new CANNON.Vec3(5, 0, 8));
-        this.modelBody = new CANNON.Body({
-            mass: 1,
-            position: new CANNON.Vec3(0, 3, 0),
-        });
-
-        this.modelBody.addShape(shape);
-        this.world.addBody(this.modelBody);
-    }
 
     private setupAnimations(gltf: any): void {
         if (!this.modelMesh || gltf.animations.length === 0) return;
@@ -65,6 +56,31 @@ export class Model {
         this.animationAction = this.mixer.clipAction(gltf.animations[0]);
         this.animationAction.play();
         this.animationAction.paused = true;
+    }
+
+    private addShadowsToModel(): void {
+        if (!this.modelMesh) return;
+
+        this.modelMesh.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+    }
+
+    private createPhysicsBody(): void {
+        if (!this.modelMesh) return;
+
+        const shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.4, 0.7));
+
+        this.modelBody = new CANNON.Body({
+            mass: 1,
+            position: new CANNON.Vec3(10, 3, 0),
+        });
+
+        this.modelBody.addShape(shape);
+        this.world.addBody(this.modelBody);
     }
 
     public update(deltaTime: number, speed: number): void {
@@ -82,6 +98,9 @@ export class Model {
 
         this.modelMesh.position.copy(this.modelBody.position);
 
+        const yOffset = 0.4;
+        this.modelMesh.position.y -= yOffset;
+
         const cannonQuat = this.modelBody.quaternion;
         const threeQuat = new THREE.Quaternion();
         threeQuat.set(cannonQuat.x, cannonQuat.y, cannonQuat.z, cannonQuat.w);
@@ -91,6 +110,8 @@ export class Model {
             this.mixer.update(deltaTime);
         }
     }
+
+
 
     public getPhysicsBody(): CANNON.Body | null {
         return this.modelBody;
