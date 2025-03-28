@@ -1,6 +1,5 @@
 import { Scene } from './scene/Scene';
 import { CameraController } from './controls/CameraController';
-import { GUIController } from './debug/GuiController';
 import { KeyboardController } from './controls/KeyboardController';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
@@ -16,23 +15,16 @@ class App {
     private objectKeyboardController: KeyboardController | undefined;
     private map!: Map;
     private wallLoader: Wall;
-    private fps: number = 0;
-    private fpsInterval: number = 1;
-    private fpsCount: number = 0;
-    private lastFpsTime: number = 0;
-    
     private cannonDebug: CannonDebug | undefined;
 
     constructor() {
         const sceneBuilder = new Scene();
         sceneBuilder.createObjects();
         sceneBuilder.createLight();
-
         const scene = sceneBuilder.getScene();
         const camera = sceneBuilder.getCamera();
         const renderer = sceneBuilder.getRenderer();
-        const world = sceneBuilder.getWorld() as CANNON.World;
-        const debuggerEnabled = import.meta.env.VITE_DEBUG_ENABLED === 'true';
+        const world = sceneBuilder.getWorld();
 
         this.wallLoader = new Wall(scene, world);
 
@@ -44,30 +36,65 @@ class App {
         this.wallLoader.addWall(4.7, 2.2, -16, 4.2, 4.4, 4.4);
         this.wallLoader.addWall(11.4, 0.3, -9.9, 0.7, 0.6, 1.1);
         this.wallLoader.addWall(6.5, 1.5, -8, 8.8, 3, 5.7);
-        
 
         this.model = new Model(scene, world);
         this.map = new Map(scene, world);
 
-        if (debuggerEnabled) {
-            this.cannonDebug = new CannonDebug(scene, world, true);
+        document.getElementById('startButton')?.addEventListener('click', () => {
+            this.loadApp(scene, camera, renderer, world);
+        });
+    }
+
+    private loadApp(scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer, world: CANNON.World): void {
+        const startButton = document.getElementById('startButton');
+        if (startButton) {
+            startButton.style.display = 'none';
         }
 
-        this.initializeScene(renderer, scene, camera, world);
+        const progressContainer = document.getElementById('progressContainer');
+        if (progressContainer) {
+            progressContainer.style.display = 'block';
+        }
+
+        let progress = 0;
+        const updateProgress = (value: number) => {
+            progress = Math.min(100, progress + value);
+            const progressBar = document.getElementById('progressBar') as HTMLElement;
+            progressBar.style.width = progress + '%';
+        };
+
+        import('three').then(THREE => {
+            updateProgress(30);
+            import('cannon-es').then(CANNON => {
+                updateProgress(60);
+                this.initializeScene(renderer, scene, camera, world, THREE, CANNON, updateProgress);
+            }).catch(error => {
+                console.error("Cannon.js failed to load:", error);
+            });
+        }).catch(error => {
+            console.error("Three.js failed to load:", error);
+        });
     }
 
     private initializeScene(
         renderer: THREE.WebGLRenderer,
         scene: THREE.Scene,
         camera: THREE.PerspectiveCamera,
-        world: CANNON.World
+        world: CANNON.World,
+        THREE: any,
+        CANNON: any,
+        updateProgress: (value: number) => void
     ): void {
+        const debuggerEnabled = import.meta.env.VITE_DEBUG_ENABLED === 'true';
+
         this.map.loadMap("/assets/models/map.glb")
             .then(() => {
+                updateProgress(70);
                 console.log("Map loaded successfully!");
                 return this.model.loadModel("/assets/models/toy_jeep.glb");
             })
             .then(() => {
+                updateProgress(90);
                 const modelMesh = this.model.getMesh();
                 const modelPhysicsBody = this.model.getPhysicsBody();
 
@@ -86,6 +113,13 @@ class App {
                     this.cameraController.setTarget(modelMesh);
 
                     this.startAnimationLoop(renderer, scene, camera, world);
+                    updateProgress(100);
+                    setTimeout(() => {
+                        const progressContainer = document.getElementById('progressContainer');
+                        if (progressContainer) {
+                            progressContainer.style.display = 'none';
+                        }
+                    }, 500);
                 } else {
                     console.error("Failed to initialize model mesh or physics body");
                 }
@@ -105,14 +139,6 @@ class App {
             const deltaTime = (currentTime - this.lastTime) / 1000;
             this.lastTime = currentTime;
 
-            this.fpsCount++;
-            if (currentTime - this.lastFpsTime >= 1000) {
-                this.fps = this.fpsCount;
-                this.fpsCount = 0;
-                this.lastFpsTime = currentTime;
-                console.log(`FPS: ${this.fps}`);
-            }
-
             if (this.objectKeyboardController) {
                 this.objectKeyboardController.update();
                 const speed = this.objectKeyboardController.getSpeed();
@@ -122,7 +148,6 @@ class App {
             this.cameraController.update();
             world.step(1 / 60);
 
-            // Update CannonDebugger if it's enabled
             if (this.cannonDebug) {
                 this.cannonDebug.update();
             }
