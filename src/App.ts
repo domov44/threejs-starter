@@ -28,10 +28,12 @@ class App {
 
         this.wallLoader = new Wall(scene, world);
 
+        // orange shop
+        this.wallLoader.addWall(10.03, 0.6, -18, 1.3, 1.2, 2.3);
+
         this.wallLoader.addWall(2, 0.5, 8.2, 3.5, 1, 15.1);
         this.wallLoader.addWall(6.9, 0.5, 10, 6.3, 1, 11.2);
         this.wallLoader.addWall(11.65, 0.6, 12.4, 0.2, 1.1, 2.8);
-        this.wallLoader.addWall(10.03, 0.6, -18, 1.3, 1.2, 2.3);
         this.wallLoader.addWall(9.7, 0.6, -14, 1.3, 1.2, 2.2);
         this.wallLoader.addWall(4.7, 2.2, -16, 4.2, 4.4, 4.4);
         this.wallLoader.addWall(11.4, 0.3, -9.9, 0.7, 0.6, 1.1);
@@ -57,6 +59,15 @@ class App {
         this.wallLoader.addWall(8.52, 0.4, -4.55, 0.4, 0.8, 0.5);
         this.wallLoader.addWall(5.65, 0.4, -4.55, 0.4, 0.8, 0.5);
         this.wallLoader.addWall(2.85, 0.4, -4.55, 0.4, 0.8, 0.5);
+
+        // blue shop
+        this.wallLoader.addWall(-6.85, 0.6, -17.55, 1.3, 1.2, 1.65);
+        this.wallLoader.addWall(-7.05, 0.6, -18.82, 0.9, 1.2, 0.9);
+
+        // blue shop double bush
+        this.wallLoader.addWall(-6, 0.21, -17.05, 0.15, 0.4, 0.4);
+        this.wallLoader.addWall(-6, 0.21, -17.5, 0.15, 0.4, 0.4);
+        this.wallLoader.addWall(-4.8, 0.4, -16.8, 0.9, 0.8, 0.5);
 
         this.model = new Model(scene, world);
         this.map = new Map(scene, world);
