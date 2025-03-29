@@ -20,7 +20,7 @@ class CameraController {
         this.controls.enabled = false;
 
         this.offset = new THREE.Vector3(0, 2, -5);
-        this.manualCameraPosition = new THREE.Vector3(10, 30, 20);
+        this.manualCameraPosition = new THREE.Vector3(0, 30, -50);
         this.manualCameraLookAt = new THREE.Vector3(0, 0, 0);
         this.camera.updateProjectionMatrix();
     }

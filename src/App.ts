@@ -36,7 +36,7 @@ class App {
         this.wallLoader.addWall(11.65, 0.6, 12.4, 0.2, 1.1, 2.8);
         this.wallLoader.addWall(9.7, 0.6, -14, 1.3, 1.2, 2.2);
         this.wallLoader.addWall(4.7, 2.2, -16, 4.2, 4.4, 4.4);
-        this.wallLoader.addWall(11.4, 0.3, -9.9, 0.7, 0.6, 1.1);
+
         this.wallLoader.addWall(6.5, 1.5, -8, 8.8, 3, 5.7);
         this.wallLoader.addWall(-6, 1.5, 13.5, 4, 3, 3.1);
         this.wallLoader.addWall(-10.1, 0.9, 13.6, 3, 1.8, 2);
@@ -68,6 +68,41 @@ class App {
         this.wallLoader.addWall(-6, 0.21, -17.05, 0.15, 0.4, 0.4);
         this.wallLoader.addWall(-6, 0.21, -17.5, 0.15, 0.4, 0.4);
         this.wallLoader.addWall(-4.8, 0.4, -16.8, 0.9, 0.8, 0.5);
+
+        // cinema
+        this.wallLoader.addWall(-6.2, 0.8, -14, 3, 1.5, 3.6);
+
+        // blue building
+        this.wallLoader.addWall(-10.85, 0.8, -14.05, 6.2, 1.5, 4.1);
+        this.wallLoader.addWall(-7.8, 0.6, -18, 0.7, 1.2, 4);
+
+        // blue building wall
+        this.wallLoader.addWall(-15.95, 0.3, -16, 0.2, 0.6, 8);
+        this.wallLoader.addWall(-14.9, 0.3, -12.1, 1.9, 0.6, 0.2);
+
+        // black trash 
+        this.wallLoader.addWall(11.4, 0.3, -9.9, 0.7, 0.6, 1.1);
+
+        // orange trash 
+        this.wallLoader.addWall(-14.4, 0.3, -13.55, 0.7, 0.6, 1.1);
+
+        // second double bush 
+        this.wallLoader.addWall(9.85, 0.4, -11.4, 0.8, 0.8, 0.5);
+        this.wallLoader.addWall(6.95, 0.4, -11.4, 0.8, 0.8, 0.5);
+        this.wallLoader.addWall(4.15, 0.4, -11.4, 0.8, 0.8, 0.5);
+
+        // second simple bush
+        this.wallLoader.addWall(8.52, 0.4, -11.4, 0.4, 0.8, 0.5);
+        this.wallLoader.addWall(5.65, 0.4, -11.4, 0.4, 0.8, 0.5);
+        this.wallLoader.addWall(2.85, 0.4, -11.4, 0.4, 0.8, 0.5);
+
+        // garden door
+        this.wallLoader.addWall(-15.8, 0.6, -8, 0.2, 1.2, 2.45);
+        this.wallLoader.addWall(-4.3, 0.6, -8, 0.2, 1.2, 2.45);
+
+        // stone
+        this.wallLoader.addWall(-5.9, 0.4, -5.3, 1.4, 0.8, 1.1);
+        this.wallLoader.addWall(-14, 0.4, -5.6, 2.2, 0.8, 1.9);
 
         this.model = new Model(scene, world);
         this.map = new Map(scene, world);
