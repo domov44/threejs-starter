@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
+import { SoundController } from './SoundController';
 
 class KeyboardController {
     private object: THREE.Object3D;
@@ -12,12 +13,9 @@ class KeyboardController {
     private keys: { [key: string]: boolean };
     private physicsBody: CANNON.Body;
     private lastUpdateTime: number;
+    private soundController: SoundController;
 
-    private sound: THREE.Audio;
-    private listener: THREE.AudioListener;
-    private audioLoader: THREE.AudioLoader;
-
-    constructor(object: THREE.Object3D, physicsBody: CANNON.Body) {
+    constructor(object: THREE.Object3D, physicsBody: CANNON.Body, soundController: SoundController) {
         this.object = object;
         this.velocity = new THREE.Vector3(0, 0, 0);
         this.acceleration = 3;
@@ -28,18 +26,7 @@ class KeyboardController {
         this.keys = {};
         this.physicsBody = physicsBody;
         this.lastUpdateTime = performance.now();
-
-        this.listener = new THREE.AudioListener();
-        this.object.add(this.listener);
-        this.audioLoader = new THREE.AudioLoader();
-        this.sound = new THREE.Audio(this.listener);
-
-        this.audioLoader.load('/motor.wav', (buffer) => {
-            this.sound.setBuffer(buffer);
-            this.sound.setLoop(true);
-            this.sound.setVolume(0);
-            this.sound.play();
-        });
+        this.soundController = soundController;
 
         this.physicsBody.fixedRotation = false;
         this.physicsBody.updateMassProperties();
@@ -91,17 +78,19 @@ class KeyboardController {
         const threeQuat = new THREE.Quaternion(quat.x, quat.y, quat.z, quat.w);
         this.object.rotation.setFromQuaternion(threeQuat);
 
-        if (this.sound.isPlaying) {
-            const volume = Math.min(speed / this.maxSpeed, 1);
-            const pitch = 1 + (speed / this.maxSpeed) * 0.5;
+        const volume = Math.min(speed / this.maxSpeed, 1);
+        const pitch = 1 + (speed / this.maxSpeed) * 0.5;
 
-            this.sound.setVolume(volume);
-            this.sound.setPlaybackRate(pitch);
-        }
+        this.soundController.setVolume("motor", volume);
+        this.soundController.setPlaybackRate("motor", pitch);
     }
 
     getSpeed(): number {
         return this.velocity.z;
+    }
+
+    stop() {
+        this.velocity.set(0, 0, 0);
     }
 }
 

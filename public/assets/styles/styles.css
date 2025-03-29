@@ -1,0 +1,34 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+#startButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 50px;
+}
+
+#progressContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50vw;
+    background: #ccc;
+    height: 20px;
+    border-radius: 15px;
+    display: none;
+}
+
+#progressBar {
+    width: 0;
+    height: 100%;
+    background: #4caf50;
+    border-radius: 15px;
+}

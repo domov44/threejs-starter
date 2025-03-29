@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as CANNON from 'cannon-es';
+import { SoundController } from '../controls/SoundController';
 
 export class Model {
     private scene: THREE.Scene;
@@ -9,10 +10,12 @@ export class Model {
     private modelBody: CANNON.Body | null = null;
     private mixer: THREE.AnimationMixer | null = null;
     private animationAction: THREE.AnimationAction | null = null;
+    private soundController: SoundController;
 
-    constructor(scene: THREE.Scene, world: CANNON.World) {
+    constructor(scene: THREE.Scene, world: CANNON.World, soundController: SoundController) {
         this.scene = scene;
         this.world = world;
+        this.soundController = soundController;
     }
 
     public async loadModel(modelPath: string): Promise<void> {
@@ -91,6 +94,7 @@ export class Model {
 
         if ((otherBody as any).userData?.type === "wall") {
             console.log("🚧 Collision détectée avec un mur !");
+            this.soundController.play("big_collision");
         }
     }
 
