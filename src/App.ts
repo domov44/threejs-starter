@@ -7,6 +7,7 @@ import { Model } from './Objects/Model';
 import { Map } from './Objects/Map';
 import { Wall } from './Objects/Wall';
 import { CannonDebug } from './debug/CannonDebug';
+import { SoundController } from './controls/SoundController';
 
 class App {
     private lastTime: number = 0;
@@ -16,6 +17,7 @@ class App {
     private map!: Map;
     private wallLoader: Wall;
     private cannonDebug: CannonDebug | undefined;
+    private soundController: SoundController;
 
     constructor() {
         const sceneBuilder = new Scene();
@@ -25,6 +27,9 @@ class App {
         const camera = sceneBuilder.getCamera();
         const renderer = sceneBuilder.getRenderer();
         const world = sceneBuilder.getWorld();
+
+        this.soundController = new SoundController();
+        this.soundController.attachListener(camera);
 
         this.wallLoader = new Wall(scene, world);
 
@@ -104,7 +109,7 @@ class App {
         this.wallLoader.addWall(-5.9, 0.4, -5.3, 1.4, 0.8, 1.1);
         this.wallLoader.addWall(-14, 0.4, -5.6, 2.2, 0.8, 1.9);
 
-        this.model = new Model(scene, world);
+        this.model = new Model(scene, world, this.soundController);
         this.map = new Map(scene, world);
 
         document.getElementById('startButton')?.addEventListener('click', () => {
@@ -158,47 +163,57 @@ class App {
             this.cannonDebug = new CannonDebug(scene, world, true);
         }
 
+        Promise.all([
+            this.soundController.loadSound("motor", "/motor.wav", { loop: true, volume: 0 }),
+            this.soundController.loadSound("big_collision", "/big_collision.wav", { loop: false, volume: 0.5 })
+        ])
+        .then(() => {
+            this.soundController.play("motor");
+            updateProgress(65);
+            
+            return this.map.loadMap("/assets/models/map.glb");
+        })
+        .then(() => {
+            updateProgress(80);
+            console.log("Map loaded successfully!");
+            return this.model.loadModel("/assets/models/toy_jeep.glb");
+        })
+        .then(() => {
+            updateProgress(95);
+            const modelMesh = this.model.getMesh();
+            const modelPhysicsBody = this.model.getPhysicsBody();
 
-        this.map.loadMap("/assets/models/map.glb")
-            .then(() => {
-                updateProgress(70);
-                console.log("Map loaded successfully!");
-                return this.model.loadModel("/assets/models/toy_jeep.glb");
-            })
-            .then(() => {
-                updateProgress(90);
-                const modelMesh = this.model.getMesh();
-                const modelPhysicsBody = this.model.getPhysicsBody();
+            if (modelMesh && modelPhysicsBody) {
+                this.objectKeyboardController = new KeyboardController(
+                    modelMesh,
+                    modelPhysicsBody,
+                    this.soundController
+                );
 
-                if (modelMesh && modelPhysicsBody) {
-                    this.objectKeyboardController = new KeyboardController(
-                        modelMesh,
-                        modelPhysicsBody
-                    );
+                this.cameraController = new CameraController(
+                    camera,
+                    renderer.domElement,
+                    this.objectKeyboardController
+                );
 
-                    this.cameraController = new CameraController(
-                        camera,
-                        renderer.domElement,
-                        this.objectKeyboardController
-                    );
+                this.cameraController.setTarget(modelMesh);
 
-                    this.cameraController.setTarget(modelMesh);
-
-                    this.startAnimationLoop(renderer, scene, camera, world);
-                    updateProgress(100);
-                    setTimeout(() => {
-                        const progressContainer = document.getElementById('progressContainer');
-                        if (progressContainer) {
-                            progressContainer.style.display = 'none';
-                        }
-                    }, 500);
-                } else {
-                    console.error("Failed to initialize model mesh or physics body");
-                }
-            })
-            .catch(error => {
-                console.error("Scene initialization failed:", error);
-            });
+                this.startAnimationLoop(renderer, scene, camera, world);
+                
+                updateProgress(100);
+                setTimeout(() => {
+                    const progressContainer = document.getElementById('progressContainer');
+                    if (progressContainer) {
+                        progressContainer.style.display = 'none';
+                    }
+                }, 500);
+            } else {
+                console.error("Failed to initialize model mesh or physics body");
+            }
+        })
+        .catch(error => {
+            console.error("Scene initialization failed:", error);
+        });
     }
 
     private startAnimationLoop(
