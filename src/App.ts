@@ -41,10 +41,22 @@ class App {
         this.wallLoader.addWall(-13.6, 0.9, 13.72, 3.95, 1.8, 2.7);
         this.wallLoader.addWall(-10, 0.9, 6.32, 12.05, 1.8, 3.4);
         this.wallLoader.addWall(-10, 0.9, 3.3, 3.5, 1.8, 2.4);
+
+        //school walls
         this.wallLoader.addWall(-15.6, 0.9, 2.3, 0.8, 1.8, 4.6);
         this.wallLoader.addWall(-4.4, 0.9, 2.3, 0.8, 1.8, 4.6);
         this.wallLoader.addWall(-6.25, 0.4, 0.09, 2.85, 0.8, 0.2);
         this.wallLoader.addWall(-13.75, 0.4, 0.09, 2.85, 0.8, 0.2);
+
+        // double bush
+        this.wallLoader.addWall(9.85, 0.4, -4.55, 0.8, 0.8, 0.5);
+        this.wallLoader.addWall(6.95, 0.4, -4.55, 0.8, 0.8, 0.5);
+        this.wallLoader.addWall(4.15, 0.4, -4.55, 0.8, 0.8, 0.5);
+
+        // simple bush
+        this.wallLoader.addWall(8.52, 0.4, -4.55, 0.4, 0.8, 0.5);
+        this.wallLoader.addWall(5.65, 0.4, -4.55, 0.4, 0.8, 0.5);
+        this.wallLoader.addWall(2.85, 0.4, -4.55, 0.4, 0.8, 0.5);
 
         this.model = new Model(scene, world);
         this.map = new Map(scene, world);
