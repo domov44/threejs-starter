@@ -36,6 +36,15 @@ class App {
         this.wallLoader.addWall(4.7, 2.2, -16, 4.2, 4.4, 4.4);
         this.wallLoader.addWall(11.4, 0.3, -9.9, 0.7, 0.6, 1.1);
         this.wallLoader.addWall(6.5, 1.5, -8, 8.8, 3, 5.7);
+        this.wallLoader.addWall(-6, 1.5, 13.5, 4, 3, 3.1);
+        this.wallLoader.addWall(-10.1, 0.9, 13.6, 3, 1.8, 2);
+        this.wallLoader.addWall(-13.6, 0.9, 13.72, 3.95, 1.8, 2.7);
+        this.wallLoader.addWall(-10, 0.9, 6.32, 12.05, 1.8, 3.4);
+        this.wallLoader.addWall(-10, 0.9, 3.3, 3.5, 1.8, 2.4);
+        this.wallLoader.addWall(-15.6, 0.9, 2.3, 0.8, 1.8, 4.6);
+        this.wallLoader.addWall(-4.4, 0.9, 2.3, 0.8, 1.8, 4.6);
+        this.wallLoader.addWall(-6.25, 0.4, 0.09, 2.85, 0.8, 0.2);
+        this.wallLoader.addWall(-13.75, 0.4, 0.09, 2.85, 0.8, 0.2);
 
         this.model = new Model(scene, world);
         this.map = new Map(scene, world);
@@ -86,6 +95,11 @@ class App {
         updateProgress: (value: number) => void
     ): void {
         const debuggerEnabled = import.meta.env.VITE_DEBUG_ENABLED === 'true';
+
+        if (debuggerEnabled) {
+            this.cannonDebug = new CannonDebug(scene, world, true);
+        }
+
 
         this.map.loadMap("/assets/models/map.glb")
             .then(() => {

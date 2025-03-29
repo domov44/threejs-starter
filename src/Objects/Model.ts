@@ -69,7 +69,7 @@ export class Model {
     private createPhysicsBody(): void {
         if (!this.modelMesh) return;
 
-        const shape = new CANNON.Box(new CANNON.Vec3(0.42, 0.4, 0.7));
+        const shape = new CANNON.Box(new CANNON.Vec3(0.42, 0.4, 0.8));
 
         this.modelBody = new CANNON.Body({
             mass: 1,
