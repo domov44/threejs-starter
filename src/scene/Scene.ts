@@ -31,7 +31,7 @@ class Scene {
     }
 
     createLight() {
-        const mainLight = new THREE.DirectionalLight(0xffffff, 5);
+        const mainLight = new THREE.DirectionalLight(0xfffaf0, 7);
         mainLight.position.set(10, 20, 10);
         mainLight.castShadow = true;
         
@@ -39,10 +39,10 @@ class Scene {
         mainLight.shadow.mapSize.height = 2048;
         mainLight.shadow.camera.near = 0.5;
         mainLight.shadow.camera.far = 100;
-        mainLight.shadow.camera.top = 20;
-        mainLight.shadow.camera.bottom = -20;
-        mainLight.shadow.camera.left = -20;
-        mainLight.shadow.camera.right = 20;
+        mainLight.shadow.camera.top = 25;
+        mainLight.shadow.camera.bottom = -25;
+        mainLight.shadow.camera.left = -28;
+        mainLight.shadow.camera.right = 28;
         
         this.scene.add(mainLight);
 
