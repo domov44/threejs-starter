@@ -1,9 +1,9 @@
 :root {
     --bg-color: #ffffff;
     --secondary-bg-color: #010A04;
-    --bg-tonal: #EFA8EF;
-    --main-color: #5D01EE;
-    --secondary-color: #3d0693;
+    --bg-tonal: #62A6FF;
+    --main-color: #FA5A2C;
+    --secondary-color: #FF2E10;
     --third-color: #f7d9cf;
     --paragraph: #dbc098;
     --color-title: #211203;
@@ -145,10 +145,12 @@ body {
         opacity: 0;
         transform: translateX(-20px);
     }
+
     80% {
         opacity: 1;
         transform: translateX(2px);
     }
+
     100% {
         transform: translateX(0);
     }
@@ -163,7 +165,7 @@ body {
     animation: fadeInSlide 0.5s ease-out;
 }
 
-.copyright{
+.copyright {
     background: var(--bg-color);
     padding: 10px 16px;
     line-height: 1;
