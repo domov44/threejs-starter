@@ -1,11 +1,12 @@
 :root {
     --bg-color: #ffffff;
     --secondary-bg-color: #010A04;
-    --bg-tonal: #ff782f;
+    --bg-tonal: #ff2f2f;
     --main-color: #FF952A;
-    --secondary-color: #c0650a;
-    --paragraph: #D898DB;
-    --color-title: #eeb8e6;
+    --secondary-color: #ff4400;
+    --third-color: #5b1800;
+    --paragraph: #dbc098;
+    --color-title: #fff0e2;
     --success-color: rgb(80, 227, 194);
     --success-bg: #192526;
     --error-color: rgb(255, 109, 116);
@@ -15,6 +16,7 @@
 body {
     margin: 0;
     overflow: hidden;
+    color: var(--color-title);
 }
 
 .hero {
@@ -25,6 +27,7 @@ body {
     top: 0;
     font-size: 20px;
     background: var(--bg-tonal);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .hero::before {
@@ -101,7 +104,8 @@ body {
     text-align: center;
     cursor: pointer;
     border: none;
-    padding: 8px 14px;
+    padding: 10px 16px;
+    text-transform: uppercase;
     transition: 0.15s ease-in-out;
     border-radius: 5px;
     text-decoration: none;
@@ -109,15 +113,17 @@ body {
 }
 
 .button.__primary {
-    box-shadow: 0px 5px var(--secondary-color);
-    color: var(--secondary-bg-color);
-    background: var(--main-color);
+    border: solid 2px var(--color-title);
+    box-shadow: 0px 5px var(--main-color);
+    color: var(--color-title);
+    background: var(--bg-tonal);
 }
 
 .button.__secondary {
-    box-shadow: 0px 5px black;
-    color: black;
-    background: white;
+    border: var(--third-color);
+    box-shadow: 0px 5px var(--secondary-color);
+    color: var(--third-color);
+    background: var(--main-color);
 }
 
 .link {
@@ -133,6 +139,30 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+@keyframes fadeInSlide {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    80% {
+        opacity: 1;
+        transform: translateX(2px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.image__wrapper img {
+    animation: fadeInSlide 0.5s cubic-bezier(0.25, 1.1, 0.35, 1);
+}
+
+
+.image__wrapper img {
+    animation: fadeInSlide 0.5s ease-out;
+}
+
 
 #progressContainer {
     position: absolute;
