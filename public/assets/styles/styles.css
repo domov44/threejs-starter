@@ -31,7 +31,7 @@ body {
 }
 
 .hero::before {
-    opacity: 0.3;
+    opacity: 0.05;
     content: "";
     position: absolute;
     top: 0;
@@ -46,7 +46,7 @@ body {
 }
 
 .hero::after {
-    opacity: 0.4;
+    opacity: 0.05;
     content: "";
     position: absolute;
     top: 0;
