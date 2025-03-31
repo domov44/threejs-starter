@@ -207,7 +207,9 @@ class App {
         if (modelMesh && modelPhysicsBody) {
             this.objectKeyboardController = new KeyboardController(modelMesh, modelPhysicsBody, this.soundController);
             this.cameraController = new CameraController(camera, renderer.domElement, this.objectKeyboardController);
-            this.cameraController.setTarget(modelMesh);
+
+            this.cameraController.setTarget(modelMesh, modelPhysicsBody);
+
             this.startAnimationLoop(renderer, scene, camera, world);
         }
     }

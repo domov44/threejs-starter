@@ -11,6 +11,7 @@ export class Model {
     private mixer: THREE.AnimationMixer | null = null;
     private animationAction: THREE.AnimationAction | null = null;
     private soundController: SoundController;
+    private shakeTime: number = 0;
 
     constructor(scene: THREE.Scene, world: CANNON.World, soundController: SoundController) {
         this.scene = scene;
@@ -72,7 +73,7 @@ export class Model {
     private createPhysicsBody(): void {
         if (!this.modelMesh) return;
 
-        const shape = new CANNON.Box(new CANNON.Vec3(0.42, 0.4, 0.8));
+        const shape = new CANNON.Box(new CANNON.Vec3(0.42, 0.4, 0.85));
 
         this.modelBody = new CANNON.Body({
             mass: 1,
@@ -115,6 +116,11 @@ export class Model {
 
         const yOffset = 0.42;
         this.modelMesh.position.y -= yOffset;
+
+        this.shakeTime += deltaTime;
+        const shakeIntensity = 0.002;
+        const shakeFrequency = 30;
+        this.modelMesh.position.y += Math.sin(this.shakeTime * shakeFrequency) * shakeIntensity;
 
         if (this.mixer) {
             this.mixer.update(deltaTime);
