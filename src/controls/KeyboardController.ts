@@ -33,6 +33,9 @@ class KeyboardController {
 
         window.addEventListener('keydown', (event) => this.keys[event.key] = true);
         window.addEventListener('keyup', (event) => this.keys[event.key] = false);
+        
+        this.soundController.play("motor");
+
     }
 
     update() {
@@ -78,8 +81,8 @@ class KeyboardController {
         const threeQuat = new THREE.Quaternion(quat.x, quat.y, quat.z, quat.w);
         this.object.rotation.setFromQuaternion(threeQuat);
 
-        const volume = Math.min(speed / this.maxSpeed, 1);
-        const pitch = 1 + (speed / this.maxSpeed) * 0.5;
+        const volume = Math.max(0.2, Math.min(speed / this.maxSpeed, 1));
+        const pitch = 0.8 + (speed / this.maxSpeed) * 0.5;
 
         this.soundController.setVolume("motor", volume);
         this.soundController.setPlaybackRate("motor", pitch);
