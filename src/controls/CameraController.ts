@@ -70,6 +70,7 @@ class CameraController {
             this.camera.lookAt(this.manualCameraLookAt);
         }
     }
+    
 }
 
 export { CameraController };
