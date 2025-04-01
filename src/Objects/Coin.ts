@@ -11,7 +11,7 @@ export class Coin {
     private onCoinCollected: () => void;
     private coinBody: CANNON.Body | null = null;
     private collected: boolean = false;
-    
+
     private rotationSpeed: number = 2;
     private floatAmplitude: number = 0.1;
     private floatSpeed: number = 1.5;
@@ -27,7 +27,7 @@ export class Coin {
 
     public addCoin(x: number, y: number, z: number, size: number = 0.5): void {
         this.initialY = y;
-        
+
         const shape = new CANNON.Box(new CANNON.Vec3(size / 2, size / 2, size / 2));
         this.coinBody = new CANNON.Body({
             mass: 0,
@@ -49,7 +49,6 @@ export class Coin {
             this.coinModel.position.set(x, y, z);
             this.coinModel.scale.set(size * 0.3, size * 0.3, size * 0.3);
 
-            // Modifier les propriétés du matériau existant
             this.coinModel.traverse((child) => {
                 if ((child as THREE.Mesh).isMesh) {
                     const mesh = child as THREE.Mesh;
@@ -61,7 +60,7 @@ export class Coin {
                     }
                 }
             });
-            
+
             this.scene.add(this.coinModel);
 
             const clock = new THREE.Clock();
@@ -71,12 +70,12 @@ export class Coin {
                     this.elapsedTime += deltaTime;
                     this.coinModel.rotation.y += this.rotationSpeed * deltaTime;
                     const floatOffset = Math.sin(this.elapsedTime * this.floatSpeed) * this.floatAmplitude;
-                    this.coinModel.position.x = this.coinBody.position.x;
-                    this.coinModel.position.y = this.coinBody.position.y + floatOffset;
-                    this.coinModel.position.z = this.coinBody.position.z;
-                    this.coinBody.position.y = this.initialY + floatOffset;
-                }
-                if (!this.collected) {
+
+                    this.coinModel.position.set(
+                        this.coinBody.position.x,
+                        this.coinBody.position.y + floatOffset,
+                        this.coinBody.position.z
+                    );
                     requestAnimationFrame(updateCoin);
                 }
             };
