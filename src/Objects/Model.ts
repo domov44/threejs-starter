@@ -80,7 +80,10 @@ export class Model {
             position: new CANNON.Vec3(8.8, 5, 2.5),
             linearDamping: 0.3,
             angularDamping: 0.3,
+            collisionFilterGroup: 1,
+            collisionFilterMask: -1,
         });
+
 
         this.modelBody.addShape(shape);
         (this.modelBody as any).userData = { type: "jeep" };

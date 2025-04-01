@@ -7,7 +7,8 @@ import { Model } from './Objects/Model';
 import { Map } from './Objects/Map';
 import { CannonDebug } from './debug/CannonDebug';
 import { SoundController } from './controls/SoundController';
-import { WallsManager } from './scene/WallManager';
+import { WallsManager } from './scene/WallsManager';
+import { CoinsManager } from './scene/CoinsManager';
 
 class App {
     private lastTime: number = 0;
@@ -16,6 +17,7 @@ class App {
     private objectKeyboardController: KeyboardController | undefined;
     private map!: Map;
     private wallsManager!: WallsManager;
+    private coinsManager!: CoinsManager;
     private cannonDebug: CannonDebug | undefined;
     private soundController: SoundController;
     private scene!: THREE.Scene;
@@ -23,6 +25,7 @@ class App {
     private renderer!: THREE.WebGLRenderer;
     private world!: CANNON.World;
     private started: boolean = false;
+    private coinCount: number = 0;
 
     constructor() {
         this.soundController = new SoundController();
@@ -41,8 +44,15 @@ class App {
 
         this.wallsManager = new WallsManager(this.scene, this.world);
         this.wallsManager.loadWalls();
+        this.coinsManager = new CoinsManager(this.scene, this.world, this.updateCoinCount.bind(this));
+        this.coinsManager.loadCoins();
         this.model = new Model(this.scene, this.world, this.soundController);
         this.map = new Map(this.scene, this.world);
+    }
+
+    private updateCoinCount(): void {
+        this.coinCount++;
+        document.getElementById('coinCount')!.textContent = `${this.coinCount}`;
     }
 
     public start(): void {
@@ -154,3 +164,5 @@ class App {
 }
 
 export { App };
+
+
