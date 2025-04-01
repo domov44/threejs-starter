@@ -15,6 +15,7 @@ class KeyboardController {
     private physicsBody: CANNON.Body;
     private lastUpdateTime: number;
     private soundController: SoundController;
+    private enabled: boolean = true;
 
     constructor(object: THREE.Object3D, physicsBody: CANNON.Body, soundController: SoundController) {
         this.object = object;
@@ -39,7 +40,20 @@ class KeyboardController {
         this.soundController.play("motor");
     }
 
+    public disable(): void {
+        this.enabled = false;
+        this.stop();
+        this.soundController.setVolume("motor", 0.1);
+        this.soundController.setPlaybackRate("motor", 0.5);
+    }
+
+    public enable(): void {
+        this.enabled = true;
+    }
+
     update() {
+        if (!this.enabled) return;
+
         const currentTime = performance.now();
         const deltaTime = (currentTime - this.lastUpdateTime) / 1000;
         this.lastUpdateTime = currentTime;

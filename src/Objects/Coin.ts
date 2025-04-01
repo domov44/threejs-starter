@@ -6,25 +6,28 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 export class Coin {
     private scene: THREE.Scene;
     private world: CANNON.World;
-    private gui: dat.GUI | null = null;
     private loader: GLTFLoader;
     private coinModel: THREE.Object3D | null = null;
     private onCoinCollected: () => void;
     private coinBody: CANNON.Body | null = null;
     private collected: boolean = false;
+    
+    private rotationSpeed: number = 2;
+    private floatAmplitude: number = 0.1;
+    private floatSpeed: number = 1.5;
+    private initialY: number = 0;
+    private elapsedTime: number = 0;
 
     constructor(scene: THREE.Scene, world: CANNON.World, onCoinCollected: () => void) {
         this.scene = scene;
         this.world = world;
         this.loader = new GLTFLoader();
         this.onCoinCollected = onCoinCollected;
-
-        if (import.meta.env.VITE_GUI_ENABLED === 'true') {
-            this.gui = new dat.GUI();
-        }
     }
 
     public addCoin(x: number, y: number, z: number, size: number = 0.5): void {
+        this.initialY = y;
+        
         const shape = new CANNON.Box(new CANNON.Vec3(size / 2, size / 2, size / 2));
         this.coinBody = new CANNON.Body({
             mass: 0,
@@ -45,14 +48,37 @@ export class Coin {
             this.coinModel = gltf.scene;
             this.coinModel.position.set(x, y, z);
             this.coinModel.scale.set(size * 0.3, size * 0.3, size * 0.3);
+
+            // Modifier les propriétés du matériau existant
+            this.coinModel.traverse((child) => {
+                if ((child as THREE.Mesh).isMesh) {
+                    const mesh = child as THREE.Mesh;
+                    if (mesh.material instanceof THREE.MeshStandardMaterial) {
+                        mesh.material.metalness = 1.0;
+                        mesh.material.roughness = 0.2;
+                        mesh.material.emissive = new THREE.Color(0x222200);
+                        mesh.material.envMapIntensity = 1.5;
+                    }
+                }
+            });
+            
             this.scene.add(this.coinModel);
 
+            const clock = new THREE.Clock();
             const updateCoin = () => {
-                if (this.coinModel && this.coinBody) {
-                    this.coinModel.position.copy(this.coinBody.position as unknown as THREE.Vector3);
-                    this.coinModel.quaternion.copy(this.coinBody.quaternion as unknown as THREE.Quaternion);
+                if (this.coinModel && this.coinBody && !this.collected) {
+                    const deltaTime = clock.getDelta();
+                    this.elapsedTime += deltaTime;
+                    this.coinModel.rotation.y += this.rotationSpeed * deltaTime;
+                    const floatOffset = Math.sin(this.elapsedTime * this.floatSpeed) * this.floatAmplitude;
+                    this.coinModel.position.x = this.coinBody.position.x;
+                    this.coinModel.position.y = this.coinBody.position.y + floatOffset;
+                    this.coinModel.position.z = this.coinBody.position.z;
+                    this.coinBody.position.y = this.initialY + floatOffset;
                 }
-                requestAnimationFrame(updateCoin);
+                if (!this.collected) {
+                    requestAnimationFrame(updateCoin);
+                }
             };
             updateCoin();
         });
@@ -64,13 +90,11 @@ export class Coin {
         this.world.addEventListener("postStep", () => {
             const jeepBody = this.getJeepBody();
             if (!jeepBody) return;
-
             if (this.collected) return;
-
             const distance = jeepBody.position.vsub(coinBody.position).length();
             if (distance < 1.2 && !this.collected) {
                 this.collected = true;
-                console.log("Pièce ramassée : " + coinBody.position, "déja ramassée :" + this.collected);
+                console.log("Pièce ramassée : " + coinBody.position);
                 if (this.coinModel) {
                     this.scene.remove(this.coinModel);
                 }
