@@ -193,3 +193,27 @@ body {
     background: var(--main-color);
     border-radius: 15px;
 }
+
+.game-popup {
+    background: var(--bg-tonal);
+    line-height: 1;
+    border: solid 2px var(--color-title);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    font-size: 20px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 1000;
+}
+
+.game-popup h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.game-popup p {
+    margin-bottom: 24px;
+}

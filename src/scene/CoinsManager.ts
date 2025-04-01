@@ -8,9 +8,15 @@ export class CoinsManager {
 
     constructor(private scene: THREE.Scene, private world: CANNON.World, private onCoinCollected: () => void) {
         this.coinsData = [
+            [13, 0.5, 0, 0.5],
             [13, 0.5, 2, 0.5],
-            [13, 0.5, 5, 0.5],
+            [13, 0.5, 4, 0.5],
+            [13, 0.5, 6, 0.5],
             [13, 0.5, 8, 0.5],
+            [13, 0.5, 10, 0.5],
+            [13, 0.5, 12, 0.5],
+            [13, 0.5, 14, 0.5],
+            [13, 0.5, 16, 0.5],
         ];
     }
 
@@ -19,9 +25,11 @@ export class CoinsManager {
             const coin = new Coin(this.scene, this.world, this.onCoinCollected);
             coin.addCoin(...coinData);
 
-            console.log(`Création de la coin à la position: ${coinData}`);
-
             this.coins.push(coin);
         });
+    }
+
+    public getCoinsCount(): number {
+        return this.coinsData.length;
     }
 }

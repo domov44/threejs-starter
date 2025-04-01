@@ -25,7 +25,11 @@ class App {
     private renderer!: THREE.WebGLRenderer;
     private world!: CANNON.World;
     private started: boolean = false;
+    private totalCoins: number = 0;
     private coinCount: number = 0;
+
+    private timer: number = 0;
+    private timerInterval: number | null = null;
 
     constructor() {
         this.soundController = new SoundController();
@@ -48,16 +52,63 @@ class App {
         this.coinsManager.loadCoins();
         this.model = new Model(this.scene, this.world, this.soundController);
         this.map = new Map(this.scene, this.world);
+        this.totalCoins = this.coinsManager.getCoinsCount();
+        document.getElementById('coinCount')!.textContent = `${this.coinCount}/${this.totalCoins}`;
     }
 
     private updateCoinCount(): void {
         this.coinCount++;
-        document.getElementById('coinCount')!.textContent = `${this.coinCount}`;
+        document.getElementById('coinCount')!.textContent = `${this.coinCount}/${this.totalCoins}`;
+
+        if (this.coinCount === this.totalCoins) {
+            this.stopTimer();
+            this.endGame();
+        }
     }
+
+    private startTimer(): void {
+        this.timer = 0;
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => {
+            this.timer++;
+            document.getElementById('timer')!.textContent = `${this.timer}`;
+        }, 1000);
+    }
+
+    private stopTimer(): void {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    private endGame(): void {
+        setTimeout(() => {
+            if (this.objectKeyboardController) {
+                this.objectKeyboardController.disable();
+            }
+
+            const popup = document.createElement('div');
+            popup.className = 'game-popup';
+            popup.innerHTML = `
+                <h2>${this.timer} seconds.</h2>
+                <p>Good job! You've collected all the coins, next time try to do it faster.</p>
+                <button id="restart-button" class="button __primary">New game</button>
+            `;
+
+            document.body.appendChild(popup);
+
+            document.getElementById('restart-button')?.addEventListener('click', () => {
+                window.location.reload();
+            });
+        }, 500);
+    }
+
 
     public start(): void {
         if (!this.started) {
             this.started = true;
+            this.startTimer();
             this.loadApp();
         }
     }
@@ -164,5 +215,3 @@ class App {
 }
 
 export { App };
-
-
