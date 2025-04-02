@@ -17,7 +17,7 @@ export class Model {
     private animationAction: THREE.AnimationAction | null = null;
     private soundController: SoundController;
     private shakeTime: number = 0;
-    
+
     private collisionListeners: ((event: CollisionEvent) => void)[] = [];
 
     constructor(scene: THREE.Scene, world: CANNON.World, soundController: SoundController) {
@@ -35,7 +35,7 @@ export class Model {
             type: 'collision',
             collisionType: collisionType
         };
-        
+
         this.collisionListeners.forEach(listener => listener(event));
     }
 
@@ -97,12 +97,18 @@ export class Model {
 
         this.modelBody = new CANNON.Body({
             mass: 1,
-            position: new CANNON.Vec3(8.8, 5, 2.5),
+            position: new CANNON.Vec3(2, 5, -2.8),
             linearDamping: 0.3,
             angularDamping: 0.3,
             collisionFilterGroup: 1,
             collisionFilterMask: -1,
         });
+
+        const quat = new CANNON.Quaternion();
+        quat.setFromAxisAngle(new CANNON.Vec3(0, -1, 0), Math.PI / 2);
+
+        this.modelBody.quaternion.copy(quat);
+
 
 
         this.modelBody.addShape(shape);
@@ -119,7 +125,7 @@ export class Model {
         if ((otherBody as any).userData?.type === "wall") {
             console.log("🚧 Collision détectée avec un mur !");
             this.soundController.play("big_collision");
-            
+
             this.emitCollisionEvent("wall");
         }
     }
