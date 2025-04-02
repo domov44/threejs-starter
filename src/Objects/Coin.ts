@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import * as dat from 'dat.gui';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { SoundController } from '../controls/SoundController';
 
 export class Coin {
     private scene: THREE.Scene;
@@ -11,6 +12,7 @@ export class Coin {
     private onCoinCollected: () => void;
     private coinBody: CANNON.Body | null = null;
     private collected: boolean = false;
+    private soundController: SoundController;
 
     private rotationSpeed: number = 2;
     private floatAmplitude: number = 0.1;
@@ -18,11 +20,12 @@ export class Coin {
     private initialY: number = 0;
     private elapsedTime: number = 0;
 
-    constructor(scene: THREE.Scene, world: CANNON.World, onCoinCollected: () => void) {
+    constructor(scene: THREE.Scene, world: CANNON.World, onCoinCollected: () => void, soundController: SoundController) {
         this.scene = scene;
         this.world = world;
         this.loader = new GLTFLoader();
         this.onCoinCollected = onCoinCollected;
+        this.soundController = soundController;
     }
 
     public addCoin(x: number, y: number, z: number, size: number = 0.5): void {
@@ -48,6 +51,7 @@ export class Coin {
             this.coinModel = gltf.scene;
             this.coinModel.position.set(x, y, z);
             this.coinModel.scale.set(size * 0.3, size * 0.3, size * 0.3);
+            this.soundController.setVolume("coin-collected", 0.08);
 
             this.coinModel.traverse((child) => {
                 if ((child as THREE.Mesh).isMesh) {
@@ -94,6 +98,10 @@ export class Coin {
             if (distance < 1.2 && !this.collected) {
                 this.collected = true;
                 console.log("Pièce ramassée : " + coinBody.position);
+                
+                this.soundController.stop("coin-collected");
+                this.soundController.play("coin-collected");
+                
                 if (this.coinModel) {
                     this.scene.remove(this.coinModel);
                 }
