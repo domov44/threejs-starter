@@ -51,7 +51,6 @@ export class Coin {
             this.coinModel = gltf.scene;
             this.coinModel.position.set(x, y, z);
             this.coinModel.scale.set(size * 0.3, size * 0.3, size * 0.3);
-            this.soundController.setVolume("coin-collected", 0.08);
 
             this.coinModel.traverse((child) => {
                 if ((child as THREE.Mesh).isMesh) {
@@ -95,7 +94,7 @@ export class Coin {
             if (!jeepBody) return;
             if (this.collected) return;
             const distance = jeepBody.position.vsub(coinBody.position).length();
-            if (distance < 1.2 && !this.collected) {
+            if (distance < 1 && !this.collected) {
                 this.collected = true;
                 console.log("Pièce ramassée : " + coinBody.position);
                 
