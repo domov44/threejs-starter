@@ -1,11 +1,21 @@
 import { App } from './App';
+import { AuthManager } from './auth/AuthManager';
 
 let appInstance: App | null = null;
 
-document.getElementById('startButton')?.addEventListener('click', () => {
-    if (!appInstance) {
-        appInstance = new App();
-        appInstance.initialize();
+window.addEventListener('DOMContentLoaded', () => {
+    const authSection = document.getElementById('authSection');
+
+    if (authSection) {
+        const authManager = new AuthManager(authSection);
+        authManager.init();
     }
-    appInstance.start();
+
+    document.getElementById('startButton')?.addEventListener('click', () => {
+        if (!appInstance) {
+            appInstance = new App();
+            appInstance.initialize();
+        }
+        appInstance.start();
+    });
 });

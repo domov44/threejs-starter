@@ -13,6 +13,7 @@
   "dependencies": {
     "cannon-es": "^0.20.0",
     "cannon-es-debugger": "^1.0.0",
+    "firebase": "^11.6.0",
     "three": "^0.174.0",
     "typescript": "^5.8.2",
     "vite": "^6.2.2"
