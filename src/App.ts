@@ -3,7 +3,7 @@ import { CameraController } from './controls/CameraController';
 import { KeyboardController } from './controls/KeyboardController';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import { Model } from './Objects/Model';
+import { Model, CollisionEvent } from './Objects/Model';
 import { Map } from './Objects/Map';
 import { CannonDebug } from './debug/CannonDebug';
 import { SoundController } from './controls/SoundController';
@@ -30,6 +30,9 @@ class App {
 
     private timer: number = 0;
     private timerInterval: number | null = null;
+    private lastCollisionTime: number = 0;
+    private collisionPenalty: number = 5;
+    private collisionCooldown: number = 1000;
 
     constructor() {
         this.soundController = new SoundController();
@@ -48,12 +51,44 @@ class App {
 
         this.wallsManager = new WallsManager(this.scene, this.world);
         this.wallsManager.loadWalls();
-        this.coinsManager = new CoinsManager(this.scene, this.world, this.updateCoinCount.bind(this));
+        this.coinsManager = new CoinsManager(this.scene, this.world, this.updateCoinCount.bind(this), this.soundController);
         this.coinsManager.loadCoins();
         this.model = new Model(this.scene, this.world, this.soundController);
+        
+        this.model.addCollisionListener(this.handleCollision.bind(this));
+        
         this.map = new Map(this.scene, this.world);
         this.totalCoins = this.coinsManager.getCoinsCount();
         document.getElementById('coinCount')!.textContent = `${this.coinCount}/${this.totalCoins}`;
+    }
+
+    private handleCollision(event: CollisionEvent): void {
+        if (event.collisionType === "wall") {
+            const currentTime = Date.now();
+            
+            if (currentTime - this.lastCollisionTime > this.collisionCooldown) {
+                this.lastCollisionTime = currentTime;
+                this.applyTimerPenalty();
+            }
+        }
+    }
+
+    private applyTimerPenalty(): void {
+        this.timer += this.collisionPenalty;
+        document.getElementById('timer')!.textContent = `${this.timer}`;
+        
+        this.showPenaltyNotification();
+    }
+
+    private showPenaltyNotification(): void {
+        const notification = document.createElement('div');
+        notification.className = 'penalty-notification';
+        notification.textContent = `+${this.collisionPenalty}s`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 2000);
     }
 
     private updateCoinCount(): void {
@@ -147,10 +182,10 @@ class App {
         }
 
         Promise.all([
-            this.soundController.loadSound("motor", "/motor.wav", { loop: true, volume: 0 }),
-            this.soundController.loadSound("big_collision", "/big_collision.wav", { loop: false, volume: 0.5 })
+            this.soundController.loadSound("motor", "/assets/audio/motor.wav", { loop: true, volume: 0 }),
+            this.soundController.loadSound("big_collision", "/assets/audio/big_collision.wav", { loop: false, volume: 0.5 }),
+            this.soundController.loadSound("coin-collected", "/assets/audio/coin.wav", { loop: false, volume: 0.7 })
         ]).then(() => {
-            this.soundController.play("motor");
             updateProgress(65);
             return this.map.loadMap("/assets/models/map.glb");
         }).then(() => {

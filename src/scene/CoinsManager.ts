@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { Coin } from '../Objects/Coin';
+import { SoundController } from '../controls/SoundController';
 
 export class CoinsManager {
     private coinsData: [number, number, number, number][];
     private coins: Coin[] = [];
+    private soundController: SoundController;
 
-    constructor(private scene: THREE.Scene, private world: CANNON.World, private onCoinCollected: () => void) {
+    constructor(private scene: THREE.Scene, private world: CANNON.World, private onCoinCollected: () => void, soundController: SoundController) {
         this.coinsData = [
             [13, 0.5, 0, 0.5],
             [13, 0.5, 2, 0.5],
@@ -18,11 +20,14 @@ export class CoinsManager {
             [13, 0.5, 14, 0.5],
             [13, 0.5, 16, 0.5],
         ];
+
+        this.onCoinCollected = onCoinCollected;
+        this.soundController = soundController;
     }
 
     public loadCoins(): void {
         this.coinsData.forEach(coinData => {
-            const coin = new Coin(this.scene, this.world, this.onCoinCollected);
+            const coin = new Coin(this.scene, this.world, this.onCoinCollected, this.soundController);
             coin.addCoin(...coinData);
 
             this.coins.push(coin);

@@ -217,3 +217,24 @@ body {
 .game-popup p {
     margin-bottom: 24px;
 }
+
+.penalty-notification {
+    position: fixed;
+    top: 40%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    color: red;
+    font-size: 32px;
+    font-weight: bold;
+    padding: 20px 40px;
+    border-radius: 10px;
+    z-index: 1000;
+    animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    30% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+    70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+}
