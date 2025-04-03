@@ -52,7 +52,6 @@ export const logout = async () => {
 
 export const getCurrentUserData = async () => {
     const user = auth.currentUser;
-    console.log(user)
     if (user) {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
@@ -75,17 +74,13 @@ export const getCurrentUserData = async () => {
 
 export const updateBestScore = async (newScore: number): Promise<void> => {
     const user = auth.currentUser;
-    console.log(user)
     if (!user) return;
 
     const userRef = doc(db, "users", user.uid);
-    console.log(userRef, user.uid)
     const userSnap = await getDoc(userRef);
-    console.log(userSnap)
 
     if (userSnap.exists()) {
         const userData = userSnap.data();
-        console.log(userData)
         const bestScore = userData.bestScore || Infinity;
 
         if (newScore < bestScore) {
