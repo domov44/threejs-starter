@@ -9,6 +9,7 @@ import { CannonDebug } from './debug/CannonDebug';
 import { SoundController } from './controls/SoundController';
 import { WallsManager } from './scene/WallsManager';
 import { CoinsManager } from './scene/CoinsManager';
+import { updateBestScore } from './auth/auth';
 
 class App {
     private lastTime: number = 0;
@@ -54,9 +55,9 @@ class App {
         this.coinsManager = new CoinsManager(this.scene, this.world, this.updateCoinCount.bind(this), this.soundController);
         this.coinsManager.loadCoins();
         this.model = new Model(this.scene, this.world, this.soundController);
-        
+
         this.model.addCollisionListener(this.handleCollision.bind(this));
-        
+
         this.map = new Map(this.scene, this.world);
         this.totalCoins = this.coinsManager.getCoinsCount();
         document.getElementById('coinCount')!.textContent = `${this.coinCount}/${this.totalCoins}`;
@@ -65,7 +66,7 @@ class App {
     private handleCollision(event: CollisionEvent): void {
         if (event.collisionType === "wall") {
             const currentTime = Date.now();
-            
+
             if (currentTime - this.lastCollisionTime > this.collisionCooldown) {
                 this.lastCollisionTime = currentTime;
                 this.applyTimerPenalty();
@@ -76,7 +77,7 @@ class App {
     private applyTimerPenalty(): void {
         this.timer += this.collisionPenalty;
         document.getElementById('timer')!.textContent = `${this.timer}`;
-        
+
         this.showPenaltyNotification();
     }
 
@@ -85,7 +86,7 @@ class App {
         notification.className = 'penalty-notification';
         notification.textContent = `+${this.collisionPenalty}s`;
         document.body.appendChild(notification);
-        
+
         setTimeout(() => {
             document.body.removeChild(notification);
         }, 2000);
@@ -117,11 +118,13 @@ class App {
         }
     }
 
-    private endGame(): void {
-        setTimeout(() => {
+    private async endGame(): Promise<void> {
+        await updateBestScore(this.timer);
+        setTimeout(async () => {
             if (this.objectKeyboardController) {
                 this.objectKeyboardController.disable();
             }
+
 
             const popup = document.createElement('div');
             popup.className = 'game-popup';
@@ -138,7 +141,6 @@ class App {
             });
         }, 500);
     }
-
 
     public start(): void {
         if (!this.started) {

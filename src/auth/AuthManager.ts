@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from "firebase/auth";
-import { getCurrentUserData, login, logout, register } from "./auth";
+import { getCurrentUserData, getLeaderboard, login, logout, register } from "./auth";
 import { auth } from "./firebase";
 
 export class AuthManager {
@@ -10,6 +10,7 @@ export class AuthManager {
 
     init() {
         onAuthStateChanged(auth, async (user) => {
+            this.fetchAndDisplayLeaderboard();
             if (user) {
                 const userData = await getCurrentUserData();
                 console.log(userData);
@@ -28,6 +29,51 @@ export class AuthManager {
             }
             this.authSection!.classList.remove('skeleton');
         });
+    }
+
+    async fetchAndDisplayLeaderboard(): Promise<void> {
+        const leaderboardContainer = document.getElementById("leaderboard");
+
+        if (!leaderboardContainer) {
+            console.error("Error: The #leaderboard element does not exist in the DOM!");
+            return;
+        }
+
+        const leaderboardListContainer = document.querySelector(".leaderboard-list") as HTMLUListElement;
+
+        if (!leaderboardListContainer) {
+            console.error("Error: The .leaderboard-list element does not exist in the DOM!");
+            return;
+        }
+
+        if (leaderboardListContainer.querySelectorAll('.skeleton-row').length === 0) {
+            return;
+        }
+
+        try {
+            const leaderboard = await getLeaderboard();
+
+            if (leaderboard.length === 0) {
+                leaderboardListContainer.innerHTML = "<p>No scores available.</p>";
+                return;
+            }
+
+            const leaderboardList = leaderboard
+                .map((player, index) => `
+                    <li>
+                        <span class="rank">#${index + 1}</span> 
+                        <span class="username">${player.username}</span> 
+                        <span class="score">${player.bestScore}s</span>
+                    </li>
+                `)
+                .join('');
+
+            leaderboardListContainer.innerHTML = leaderboardList;
+
+        } catch (error) {
+            console.error("Error while retrieving the leaderboard", error);
+            leaderboardListContainer.innerHTML = `<p class="error-message">⚠️ Error while loading the leaderboard.</p>`;
+        }
     }
 
     createAuthModal() {
