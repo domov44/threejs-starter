@@ -24,20 +24,29 @@ export const getLeaderboard = async (): Promise<{ username: string; bestScore: n
 
 
 export const register = async (username: string, password: string) => {
+    if (username.length > 15) {
+        return Promise.reject(new Error("Username cannot exceed 15 characters."));
+    }
+
     const lowercaseUsername = username.toLowerCase();
     const email = `${lowercaseUsername}@mail.com`;
 
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-    await setDoc(doc(db, "users", user.uid), {
-        username: lowercaseUsername,
-        bestScore: null,
-        createdAt: new Date(),
-    });
+        await setDoc(doc(db, "users", user.uid), {
+            username: lowercaseUsername,
+            bestScore: null,
+            createdAt: new Date(),
+        });
 
-    return user;
+        return user;
+    } catch (error) {
+        return Promise.reject(error);
+    }
 };
+
 
 export const login = async (username: string, password: string) => {
     const lowercaseUsername = username.toLowerCase();
