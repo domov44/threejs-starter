@@ -1,6 +1,26 @@
 import { auth, db } from "./firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, query, collection, orderBy, getDocs } from "firebase/firestore";
+
+export const getLeaderboard = async (): Promise<{ username: string; bestScore: number }[]> => {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, orderBy("bestScore", "asc"));
+
+    const querySnapshot = await getDocs(q);
+    const leaderboard: { username: string; bestScore: number }[] = [];
+
+    querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        if (userData.username && userData.bestScore !== undefined) {
+            leaderboard.push({
+                username: userData.username,
+                bestScore: userData.bestScore,
+            });
+        }
+    });
+
+    return leaderboard;
+};
 
 export const register = async (username: string, password: string) => {
     const lowercaseUsername = username.toLowerCase();
@@ -50,6 +70,27 @@ export const getCurrentUserData = async () => {
             email: "Non connecté",
             bestScore: 0,
         };
+    }
+};
+
+export const updateBestScore = async (newScore: number): Promise<void> => {
+    const user = auth.currentUser;
+    console.log(user)
+    if (!user) return;
+
+    const userRef = doc(db, "users", user.uid);
+    console.log(userRef, user.uid)
+    const userSnap = await getDoc(userRef);
+    console.log(userSnap)
+
+    if (userSnap.exists()) {
+        const userData = userSnap.data();
+        console.log(userData)
+        const bestScore = userData.bestScore || Infinity;
+
+        if (newScore < bestScore) {
+            await setDoc(userRef, { bestScore: newScore }, { merge: true });
+        }
     }
 };
 
