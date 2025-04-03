@@ -58,16 +58,33 @@ export class AuthManager {
             }
 
             const leaderboardList = leaderboard
-                .map((player, index) => `
-                    <li>
-                        <span class="rank">#${index + 1}</span> 
+                .map((player, index) => {
+                    let emoji = "";
+                    let fontSize = "1rem";
+
+                    if (index === 0) {
+                        emoji = "🥇";
+                        fontSize = "1.4rem";
+                    } else if (index === 1) {
+                        emoji = "🥈";
+                        fontSize = "1.2rem";
+                    } else if (index === 2) {
+                        emoji = "🥉";
+                        fontSize = "1rem";
+                    }
+
+                    return `
+                    <li style="font-size: ${fontSize}; font-weight: bold;">
+                        <span class="rank">#${index + 1} ${emoji}</span> 
                         <span class="username">${player.username}</span> 
                         <span class="score">${player.bestScore}s</span>
                     </li>
-                `)
+                `;
+                })
                 .join('');
 
             leaderboardListContainer.innerHTML = leaderboardList;
+
 
         } catch (error) {
             console.error("Error while retrieving the leaderboard", error);
@@ -236,6 +253,16 @@ export class AuthManager {
 
         this.clearError('signInForm');
 
+        if (!username) {
+            this.showError('signInForm', 'Username is required');
+            return;
+        }
+
+        if (!password) {
+            this.showError('signInForm', 'Passwords is required.');
+            return;
+        }
+
         signInButton.disabled = true;
         signInButton.classList.add('loading');
         signInButton.textContent = 'Signing in...';
@@ -247,6 +274,12 @@ export class AuthManager {
             console.error(error);
             if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
                 this.showError('signInForm', 'Incorrect username or password');
+            } else if (error.code === 'auth/network-request-failed') {
+                this.showError('signInForm', 'Error, check your network connection');
+            } else if (error.code === 'auth/invalid-email') {
+                this.showError('signInForm', 'Username is required');
+            } else if (error.code === 'auth/missing-password') {
+                this.showError('signInForm', 'Password is required');
             } else {
                 this.showError('signInForm', 'Error, try again or check your connection.');
             }
@@ -264,6 +297,21 @@ export class AuthManager {
         const signUpButton = document.getElementById('signUpSubmit') as HTMLButtonElement;
 
         this.clearError('signUpForm');
+
+        if (!username) {
+            this.showError('signUpForm', 'Username is required');
+            return;
+        }
+
+        if (!password) {
+            this.showError('signUpForm', 'Passwords is required.');
+            return;
+        }
+
+        if (!confirmPassword) {
+            this.showError('signUpForm', 'You need to confirm your password.');
+            return;
+        }
 
         if (password !== confirmPassword) {
             this.showError('signUpForm', 'Passwords do not match.');
@@ -283,7 +331,16 @@ export class AuthManager {
                 this.showError('signUpForm', 'This username is already taken.');
             } else if (error.code === 'auth/weak-password') {
                 this.showError('signUpForm', 'Password should be at least 6 characters.');
-            } else {
+            } else if (error.message === 'Username cannot exceed 15 characters.') {
+                this.showError('signUpForm', 'Username cannot exceed 15 characters.');
+            } else if (error.code === 'auth/network-request-failed') {
+                this.showError('signUpForm', 'Error, check your network connection');
+            } else if (error.code === 'auth/invalid-email') {
+                this.showError('signUpForm', 'Username is required');
+            } else if (error.code === 'auth/missing-password') {
+                this.showError('signUpForm', 'Password is required');
+            }
+            else {
                 this.showError('signUpForm', 'Error, try again or check your connection.');
             }
         } finally {
