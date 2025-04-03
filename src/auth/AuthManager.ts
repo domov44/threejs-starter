@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from "firebase/auth";
-import { getCurrentUserData, login, register } from "./auth";
+import { getCurrentUserData, login, logout, register } from "./auth";
 import { auth } from "./firebase";
 
 export class AuthManager {
@@ -13,13 +13,20 @@ export class AuthManager {
             if (user) {
                 const userData = await getCurrentUserData();
                 console.log(userData);
-                this.authSection!.innerHTML = `Logged in as ${userData.username}`;
+                this.authSection!.innerHTML = `Logged in as ${userData.username}<button id="logoutButton" class="logout__button">Logout?</button>`;
+                document.getElementById('logoutButton')?.addEventListener('click', () => {
+                    logout();
+                });
+
+                this.authSection!.classList.add('__logged-in');
             } else {
                 this.authSection!.innerHTML = `<button id="signInButton" class="button __primary">Sign In / Sign Up</button>`;
                 document.getElementById('signInButton')?.addEventListener('click', () => {
                     this.createAuthModal();
                 });
+                this.authSection!.classList.remove('__logged-in');
             }
+            this.authSection!.classList.remove('skeleton');
         });
     }
 
@@ -32,7 +39,7 @@ export class AuthManager {
         const modal = document.createElement('div');
         modal.id = 'authModal';
         modal.classList.add('modal');
-        modal.style.display = 'block';
+        modal.style.display = 'flex';
 
         const modalContent = document.createElement('div');
         modalContent.classList.add('modal-content');
@@ -45,6 +52,7 @@ export class AuthManager {
         });
 
         const authTabs = this.createAuthTabs();
+        const authTitle = this.createAuthModalTitle();
 
         const authForm = document.createElement('div');
         authForm.id = 'authForm';
@@ -56,12 +64,31 @@ export class AuthManager {
         authForm.appendChild(signUpForm);
 
         modalContent.appendChild(closeBtn);
+        modalContent.appendChild(authTitle);
         modalContent.appendChild(authTabs);
         modalContent.appendChild(authForm);
 
         modal.appendChild(modalContent);
         document.body.appendChild(modal);
     }
+
+    createAuthModalTitle() {
+        const modalTitleWrapper = document.createElement('div');
+        modalTitleWrapper.classList.add('modal-title-wrapper');
+
+        const modalTitle = document.createElement('h2');
+        modalTitle.classList.add('modal-title');
+        modalTitle.textContent = 'Sign in to save your score';
+
+        const separator = document.createElement('hr');
+        separator.classList.add('modal-separator');
+
+        modalTitleWrapper.appendChild(modalTitle);
+        modalTitleWrapper.appendChild(separator);
+
+        return modalTitleWrapper;
+    }
+
 
     createAuthTabs() {
         const authTabs = document.createElement('div');
@@ -89,6 +116,7 @@ export class AuthManager {
 
     createSignInForm() {
         const signInForm = document.createElement('div');
+        signInForm.classList.add('form');
         signInForm.id = 'signInForm';
         const signInUsername = document.createElement('input');
         signInUsername.type = 'text';
@@ -99,6 +127,7 @@ export class AuthManager {
         signInPassword.id = 'signInPassword';
         signInPassword.placeholder = 'Password';
         const signInSubmit = document.createElement('button');
+        signInSubmit.classList.add('button', '__primary', 'full-w');
         signInSubmit.id = 'signInSubmit';
         signInSubmit.textContent = 'Sign In';
         signInSubmit.addEventListener('click', () => this.handleSignIn());
@@ -112,6 +141,7 @@ export class AuthManager {
 
     createSignUpForm() {
         const signUpForm = document.createElement('div');
+        signUpForm.classList.add('form');
         signUpForm.id = 'signUpForm';
         signUpForm.style.display = 'none';
         const signUpUsername = document.createElement('input');
@@ -122,27 +152,33 @@ export class AuthManager {
         signUpPassword.type = 'password';
         signUpPassword.id = 'signUpPassword';
         signUpPassword.placeholder = 'Password';
+        const signUpConfirmPassword = document.createElement('input');
+        signUpConfirmPassword.type = 'password';
+        signUpConfirmPassword.id = 'signUpConfirmPassword';
+        signUpConfirmPassword.placeholder = 'Confirm password';
         const signUpSubmit = document.createElement('button');
+        signUpSubmit.classList.add('button', '__primary', 'full-w');
         signUpSubmit.id = 'signUpSubmit';
         signUpSubmit.textContent = 'Sign Up';
         signUpSubmit.addEventListener('click', () => this.handleSignUp());
 
         signUpForm.appendChild(signUpUsername);
         signUpForm.appendChild(signUpPassword);
+        signUpForm.appendChild(signUpConfirmPassword);
         signUpForm.appendChild(signUpSubmit);
 
         return signUpForm;
     }
 
     showSignInForm() {
-        document.getElementById('signInForm')!.style.display = 'block';
+        document.getElementById('signInForm')!.style.display = 'flex';
         document.getElementById('signUpForm')!.style.display = 'none';
         document.getElementById('signInTab')!.classList.add('active');
         document.getElementById('signUpTab')!.classList.remove('active');
     }
 
     showSignUpForm() {
-        document.getElementById('signUpForm')!.style.display = 'block';
+        document.getElementById('signUpForm')!.style.display = 'flex';
         document.getElementById('signInForm')!.style.display = 'none';
         document.getElementById('signUpTab')!.classList.add('active');
         document.getElementById('signInTab')!.classList.remove('active');
@@ -151,28 +187,96 @@ export class AuthManager {
     async handleSignIn() {
         const username = (document.getElementById('signInUsername') as HTMLInputElement).value;
         const password = (document.getElementById('signInPassword') as HTMLInputElement).value;
+        const signInButton = document.getElementById('signInSubmit') as HTMLButtonElement;
+
+        this.clearError('signInForm');
+
+        signInButton.disabled = true;
+        signInButton.classList.add('loading');
+        signInButton.textContent = 'Signing in...';
 
         try {
             await login(username, password);
-            alert('Connexion réussie!');
             document.getElementById('authModal')!.style.display = 'none';
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert('Erreur de connexion!');
+            if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                this.showError('signInForm', 'Incorrect username or password');
+            } else {
+                this.showError('signInForm', 'Error, try again or check your connection.');
+            }
+        } finally {
+            signInButton.disabled = false;
+            signInButton.classList.remove('loading');
+            signInButton.textContent = 'Sign In';
         }
     }
 
     async handleSignUp() {
         const username = (document.getElementById('signUpUsername') as HTMLInputElement).value;
         const password = (document.getElementById('signUpPassword') as HTMLInputElement).value;
+        const confirmPassword = (document.getElementById('signUpConfirmPassword') as HTMLInputElement).value;
+        const signUpButton = document.getElementById('signUpSubmit') as HTMLButtonElement;
+
+        this.clearError('signUpForm');
+
+        if (password !== confirmPassword) {
+            this.showError('signUpForm', 'Passwords do not match.');
+            return;
+        }
+
+        signUpButton.disabled = true;
+        signUpButton.classList.add('loading');
+        signUpButton.textContent = 'Signing up...';
 
         try {
             await register(username, password);
-            alert('Inscription réussie!');
             document.getElementById('authModal')!.style.display = 'none';
+        } catch (error: any) {
+            console.error(error);
+            if (error.code === 'auth/email-already-in-use') {
+                this.showError('signUpForm', 'This username is already taken.');
+            } else if (error.code === 'auth/weak-password') {
+                this.showError('signUpForm', 'Password should be at least 6 characters.');
+            } else {
+                this.showError('signUpForm', 'Error, try again or check your connection.');
+            }
+        } finally {
+            signUpButton.disabled = false;
+            signUpButton.classList.remove('loading');
+            signUpButton.textContent = 'Sign Up';
+        }
+    }
+
+    showError(formId: string, message: string) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+
+        let errorDiv = form.querySelector('.error-message');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.classList.add('error-message');
+            form.insertBefore(errorDiv, form.lastElementChild);
+        }
+
+        errorDiv.textContent = message;
+    }
+
+    clearError(formId: string) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+        const errorDiv = form.querySelector('.error-message');
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+    }
+
+
+    async handleLogout() {
+        try {
+            await logout();
         } catch (error) {
             console.error(error);
-            alert('Erreur d\'inscription!');
         }
     }
 }
