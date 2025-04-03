@@ -13,10 +13,15 @@
     --error-bg: #2B2023;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     overflow: hidden;
     color: var(--color-title);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .hero {
@@ -27,7 +32,6 @@ body {
     top: 0;
     font-size: 20px;
     background: var(--bg-tonal);
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .hero::before {
@@ -125,6 +129,41 @@ body {
     color: var(--bg-color);
     background: var(--main-color);
 }
+
+.button.loading {
+    background-color: rgb(234, 226, 220);
+    border-color: rgb(208, 199, 192);
+    box-shadow: unset;
+    cursor: default;
+    opacity: 0.8;
+    color:var(--color-title);
+    position: relative;
+}
+
+.button.loading::after {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--main-color);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: translateY(-50%) rotate(0deg);
+    }
+
+    100% {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
 
 .link {
     color: var(--main-color);
@@ -233,104 +272,175 @@ body {
 }
 
 @keyframes fadeInOut {
-    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-    30% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-    70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+
+    70% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
 }
 
-.authSection{
-    position:absolute;
+.authSection {
+    position: absolute;
     right: 20px;
     top: 20px;
 }
 
-/* Modale */
+.logout__button {
+    background: none;
+    border: none;
+    color: red;
+    text-decoration: underline;
+    padding: 0;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #7e91ab 25%, #5c697c 50%, #7e91ab 75%);
+    background-size: 200% 100%;
+    animation: loading 5.5s infinite;
+    width: 150px;
+    height: 40px;
+    border-radius: 5px;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.authSection.__logged-in {
+    background: var(--bg-color);
+    padding: 10px 16px;
+    line-height: 1;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: solid 2px var(--color-title);
+}
+
 .modal {
-    display: none; /* Par défaut, la modale est cachée */
+    display: none;
     position: fixed;
+    align-items: center;
+    justify-content: center;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
 }
 
-/* Contenu de la modale */
 .modal-content {
     background-color: #fff;
-    padding: 20px;
+    padding: 30px;
     border-radius: 8px;
-    width: 400px;
-    max-width: 100%;
-    margin: 100px auto;
+    width: 500px;
+    max-width: 90%;
     position: relative;
 }
 
-/* Bouton de fermeture */
+.modal-title-wrapper {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+    color: var(--color-title);
+}
+
+.modal-separator {
+    width: 80%;
+    height: 2px;
+    background-color: #ddd;
+    border: none;
+    margin: 10px auto;
+}
+
 .close-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 30px;
+    top: 0px;
+    right: 5px;
+    font-size: 40px;
     cursor: pointer;
 }
 
-/* Onglets (Sign In / Sign Up) */
 #authTabs {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
+    gap: 5px;
 }
 
 .tab {
     padding: 10px 20px;
-    background-color: #f0f0f0;
-    border: none;
+    background-color: var(--bg-color);
+    border: solid 1px var(--color-title);
     border-radius: 5px;
     cursor: pointer;
     flex: 1;
     text-align: center;
+    font-size: 16px;
+    text-transform: uppercase;
 }
 
 .tab.active {
-    background-color: #007bff;
-    color: white;
+    background-color: var(--main-color);
+    color: var(--bg-color);
 }
 
 #authForm input {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
+    color: var(--color-title);
+    border: 1px solid var(--color-title);
     border-radius: 5px;
     font-size: 16px;
 }
 
-#authForm button {
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.error-message {
+    color: red;
+    background: rgba(255, 0, 0, 0.077);
     border-radius: 5px;
-    width: 100%;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-#authForm button:hover {
-    background-color: #0056b3;
-}
-
-#signUpForm {
-    display: none;
+    padding: 5px 10px;
 }
 
 @keyframes modalFadeIn {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -338,4 +448,12 @@ body {
 
 .modal-content {
     animation: modalFadeIn 0.3s ease-out;
+}
+
+.full-w {
+    width: 100%;
+}
+
+.display-none {
+    display: none;
 }

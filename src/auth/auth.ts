@@ -3,13 +3,14 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, on
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export const register = async (username: string, password: string) => {
-    const email = `${username}@mail.com`;
+    const lowercaseUsername = username.toLowerCase();
+    const email = `${lowercaseUsername}@mail.com`;
 
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
     await setDoc(doc(db, "users", user.uid), {
-        username,
+        username: lowercaseUsername,
         bestScore: 0,
         createdAt: new Date(),
     });
@@ -18,7 +19,8 @@ export const register = async (username: string, password: string) => {
 };
 
 export const login = async (username: string, password: string) => {
-    const email = `${username}@mail.com`;
+    const lowercaseUsername = username.toLowerCase();
+    const email = `${lowercaseUsername}@mail.com`;
 
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user;
