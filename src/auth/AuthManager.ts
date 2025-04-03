@@ -13,7 +13,6 @@ export class AuthManager {
             this.fetchAndDisplayLeaderboard();
             if (user) {
                 const userData = await getCurrentUserData();
-                console.log(userData);
                 this.authSection!.innerHTML = `Logged in as ${userData.username}<button id="logoutButton" class="logout__button">Logout?</button>`;
                 document.getElementById('logoutButton')?.addEventListener('click', () => {
                     logout();
