@@ -11,7 +11,7 @@ export const getLeaderboard = async (): Promise<{ username: string; bestScore: n
 
     querySnapshot.forEach((doc) => {
         const userData = doc.data();
-        if (userData.username && userData.bestScore !== undefined) {
+        if (userData.username && userData.bestScore !== undefined && userData.bestScore !== null) {
             leaderboard.push({
                 username: userData.username,
                 bestScore: userData.bestScore,
@@ -22,6 +22,7 @@ export const getLeaderboard = async (): Promise<{ username: string; bestScore: n
     return leaderboard;
 };
 
+
 export const register = async (username: string, password: string) => {
     const lowercaseUsername = username.toLowerCase();
     const email = `${lowercaseUsername}@mail.com`;
@@ -31,7 +32,7 @@ export const register = async (username: string, password: string) => {
 
     await setDoc(doc(db, "users", user.uid), {
         username: lowercaseUsername,
-        bestScore: 0,
+        bestScore: null,
         createdAt: new Date(),
     });
 
@@ -60,14 +61,14 @@ export const getCurrentUserData = async () => {
             return {
                 username: "Utilisateur inconnu",
                 email: "Non renseigné",
-                bestScore: 0,
+                bestScore: null,
             };
         }
     } else {
         return {
             username: "Invité",
             email: "Non connecté",
-            bestScore: 0,
+            bestScore: null,
         };
     }
 };
