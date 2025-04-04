@@ -75,9 +75,8 @@ class App {
     }
 
     private applyTimerPenalty(): void {
-        this.timer += this.collisionPenalty;
-        document.getElementById('timer')!.textContent = `${this.timer}`;
-
+        this.timer += this.collisionPenalty * 1000;
+        document.getElementById('timer')!.textContent = `${this.timer} ms`;
         this.showPenaltyNotification();
     }
 
@@ -106,10 +105,12 @@ class App {
         this.timer = 0;
         if (this.timerInterval) clearInterval(this.timerInterval);
         this.timerInterval = setInterval(() => {
-            this.timer++;
-            document.getElementById('timer')!.textContent = `${this.timer}`;
-        }, 1000);
+            this.timer += 10;
+            document.getElementById('timer')!.textContent = `${this.timer} ms`;
+        }, 10);
     }
+
+
 
     private stopTimer(): void {
         if (this.timerInterval) {

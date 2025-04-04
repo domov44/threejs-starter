@@ -77,7 +77,7 @@ export class AuthManager {
                     <li style="font-size: ${fontSize}; font-weight: bold;">
                         <span class="rank">#${index + 1} ${emoji}</span> 
                         <span class="username">${player.username}</span> 
-                        <span class="score">${player.bestScore}s</span>
+                        <span class="score">${player.bestScore}ms</span>
                     </li>
                 `;
                 })
