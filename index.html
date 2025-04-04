@@ -15,7 +15,7 @@
             </div>
             <div class="ui-controls">
                 <button id="startButton" class="button __primary">Start</button>
-                <button id="startButton" class="button __secondary">How to play?</button>
+                <button id="howToPlayButton" class="button __secondary">How to play?</button>
             </div>
             <div class="copyright">
                 Made with💡by <a class="link" href="https://www.ronanscotet.com" target="_blank">RONAN SCOTET</a>
@@ -37,6 +37,73 @@
             </div>
         </div>
     </section>
+
+    <div id="howToPlayModal" class="how-to-play-modal hidden">
+        <div class="modal-content">
+            <span id="closeModal" class="close-btn">&times;</span>
+            <div class="step active">
+                <h2>🎯 What is the aim of the game?</h2>
+                <p>
+                    There are <strong>67 coins 🪙</strong> hidden across the map.<br />
+                    Your mission? Grab them all as fast as you can! ⏱️<br /><br />
+
+                    🚧 But beware: crashing into obstacles will slow you down!<br />
+                    Every second counts — so drive smart and stay sharp! 🧠💨<br /><br />
+
+                    Good luck, driver! 🏁
+                </p>
+            </div>
+
+            <div class="step">
+                <h2>🕹️ How do I play the game?</h2>
+                <p>
+                    <strong>Move around:</strong><br />
+                    <kbd>ZQSD</kbd> or <kbd>Arrow keys</kbd> to control your car like a boss! 🚗<br /><br />
+
+                    <strong>Brake:</strong><br />
+                    Press <kbd>Space</kbd> to stop — or drift like a pro 💨<br /><br />
+
+                    <strong>Mute the game:</strong><br />
+                    <kbd>M</kbd> if you need peace (or silence the madness 😅🎵)
+                </p>
+            </div>
+
+            <div class="step">
+                <h2>💡 A few tips from the creator</h2>
+                <p>
+                    <strong>📝 Create an account</strong> to save your score and appear in the leaderboard.<br />
+                    Let the world see your name in lights! 🌍🏆<br /><br />
+
+                    <strong>⚙️ Game lagging?</strong> Here’s how to enable graphics acceleration for smoother
+                    gameplay:<br />
+                    1. Open your browser settings (Chrome, Edge, etc.)<br />
+                    2. Search for "<em>hardware acceleration</em>"<br />
+                    3. Enable it ✅ if it’s off<br />
+                    4. Restart your browser 🚀<br /><br />
+
+                    And that's it — turbo mode ON! 🔧🔥
+                </p>
+            </div>
+            <div class="navigation">
+                <button id="prevStep" class="button __primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        viewBox="0 0 16 16">
+                        <path d="M11 1L3 8l8 7V1z" />
+                    </svg>
+                    Previous
+                </button>
+
+                <button id="nextStep" class="button __primary">
+                    Next
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        viewBox="0 0 16 16">
+                        <path d="M5 1l8 7-8 7V1z" />
+                    </svg>
+                </button>
+
+            </div>
+        </div>
+    </div>
 
     <div class="ui-game" id="ui-game">
         <div id="coinCounter">
