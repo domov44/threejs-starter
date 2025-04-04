@@ -155,7 +155,6 @@ class App {
     public start(): void {
         if (!this.started) {
             this.started = true;
-            this.startTimer();
             this.loadApp();
         }
     }
@@ -216,6 +215,8 @@ class App {
                     hero.style.display = 'none';
                 }
             }, 500);
+
+            this.startTimer();
         });
     }
 
