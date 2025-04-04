@@ -75,8 +75,12 @@ class App {
     }
 
     private applyTimerPenalty(): void {
-        this.timer += this.collisionPenalty * 1000;
-        document.getElementById('timer')!.textContent = `${this.timer} ms`;
+        this.startTime -= this.collisionPenalty * 1000;
+
+        const currentTime = performance.now();
+        const elapsedMs = Math.floor(currentTime - this.startTime);
+        document.getElementById('timer')!.textContent = `${elapsedMs} ms`;
+
         this.showPenaltyNotification();
     }
 
@@ -95,22 +99,23 @@ class App {
         this.coinCount++;
         document.getElementById('coinCount')!.textContent = `${this.coinCount}/${this.totalCoins}`;
 
-        if (this.coinCount === this.totalCoins) {
+        if (this.coinCount === 1) {
             this.stopTimer();
             this.endGame();
         }
     }
+    private startTime: number = 0;
 
     private startTimer(): void {
-        this.timer = 0;
+        this.startTime = performance.now();
         if (this.timerInterval) clearInterval(this.timerInterval);
+
         this.timerInterval = setInterval(() => {
-            this.timer += 10;
-            document.getElementById('timer')!.textContent = `${this.timer} ms`;
+            const currentTime = performance.now();
+            const elapsedMs = Math.floor(currentTime - this.startTime);
+            document.getElementById('timer')!.textContent = `${elapsedMs / 1000}s`;
         }, 10);
     }
-
-
 
     private stopTimer(): void {
         if (this.timerInterval) {
@@ -120,17 +125,21 @@ class App {
     }
 
     private async endGame(): Promise<void> {
-        await updateBestScore(this.timer);
+        const finalTime = Math.floor(performance.now() - this.startTime);
+
+        const finalTimeInSeconds = finalTime / 1000;
+
+        await updateBestScore(finalTime);
+
         setTimeout(async () => {
             if (this.objectKeyboardController) {
                 this.objectKeyboardController.disable();
             }
 
-
             const popup = document.createElement('div');
             popup.className = 'game-popup';
             popup.innerHTML = `
-                <h2>${this.timer} seconds.</h2>
+                <h2>${finalTimeInSeconds.toFixed(2)} seconds.</h2>
                 <p>Good job! You've collected all the coins, next time try to do it faster.</p>
                 <button id="restart-button" class="button __primary">New game</button>
             `;
