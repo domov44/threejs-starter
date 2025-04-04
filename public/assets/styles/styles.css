@@ -13,6 +13,21 @@
     --error-bg: #2B2023;
 }
 
+::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--main-color);
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+    border-radius: 8px;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -212,6 +227,19 @@ body {
     border: solid 2px var(--color-title);
 }
 
+.leaderboard-list-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.score {
+    color: var(--main-color);
+}
+
+.username {
+    font-style: italic;
+}
+
 
 #progressContainer {
     position: absolute;
@@ -234,16 +262,17 @@ body {
 }
 
 .game-popup {
-    background: var(--bg-tonal);
+    background: var(--bg-color);
     line-height: 1;
     border: solid 2px var(--color-title);
     position: absolute;
     top: 50%;
+    color: var(--color-title);
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 20px;
     font-size: 20px;
-    border-radius: 10px;
+    border-radius: 8px;
     text-align: center;
     z-index: 1000;
 }
@@ -469,17 +498,37 @@ body {
     max-height: 80vh;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     width: fit-content;
-    min-width: 250px;
+    min-width: 300px;
     max-width: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ui-game{
+    font-size: 20px;
+    background: var(--bg-color);
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: var(--color-title);
+    border-radius: 5px;
+    border: solid 1px var(--color-title);
+    padding: 8px 15px;
+}
+
+.coinCount, .timer{
+    color: var(--main-color);
 }
 
 .leaderboard h2 {
     text-align: center;
     font-size: 18px;
+    margin: 0;
 }
 
 .leaderboard-list {
     list-style: none;
+    overflow-y: scroll;
     padding: 0;
     display: flex;
     flex-direction: column;

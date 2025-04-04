@@ -74,10 +74,12 @@ export class AuthManager {
                     }
 
                     return `
-                    <li style="font-size: ${fontSize}; font-weight: bold;">
-                        <span class="rank">#${index + 1} ${emoji}</span> 
-                        <span class="username">${player.username}</span> 
-                        <span class="score">${player.bestScore / 1000}s</span>
+                    <li class="leaderboard-list-item" style="font-size: ${fontSize}; font-weight: bold;">
+                        <div class="user-info">
+                           <span class="rank">${index > 2 ? index + 1 : ''} ${emoji}</span>
+                            <span class="username">${player.username}</span> 
+                        </div>
+                        <span class="score">${index < 3 ? '🔥' : ''}${player.bestScore / 1000}s${index < 3 ? '🔥' : ''}</span>
                     </li>
                 `;
                 })
