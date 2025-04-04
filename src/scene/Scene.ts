@@ -31,7 +31,6 @@ class Scene {
     }
 
     createLight() {
-        // Lumière principale (directionnelle, avec ombres)
         const mainLight = new THREE.DirectionalLight(0xfffaf0, 7);
         mainLight.position.set(10, 20, 10);
         mainLight.castShadow = true;
@@ -62,6 +61,7 @@ class Scene {
         const secondaryPointLight = new THREE.PointLight(0xffffff, 2, 60);
         secondaryPointLight.position.set(-20, 25, -20);
         this.scene.add(secondaryPointLight);
+        this.scene.background = new THREE.Color(0xfabda7);
     }
     
 
