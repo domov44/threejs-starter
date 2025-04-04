@@ -99,7 +99,7 @@ class App {
         this.coinCount++;
         document.getElementById('coinCount')!.textContent = `${this.coinCount}/${this.totalCoins}`;
 
-        if (this.coinCount === 1) {
+        if (this.coinCount === this.totalCoins) {
             this.stopTimer();
             this.endGame();
         }
