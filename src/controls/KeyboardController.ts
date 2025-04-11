@@ -54,9 +54,9 @@ class KeyboardController {
         this.enabled = true;
     }
 
-    private playDriftSound(speed: number, isTurning: boolean): void {
+    private playDriftSound(speed: number, isTurning: boolean, isBraking: boolean): void {
         const driftVolume = Math.min(1, Math.max(0, speed / this.maxSpeed));
-        if (isTurning) {
+        if (isTurning || isBraking) {
             if (!this.driftSoundPlaying) {
                 this.driftSoundPlaying = true;
                 this.soundController.play("drift");
@@ -132,7 +132,7 @@ class KeyboardController {
         this.soundController.setVolume("motor", volume);
         this.soundController.setPlaybackRate("motor", pitch);
 
-        this.playDriftSound(speed, this.isTurning);
+        this.playDriftSound(speed, this.isTurning, this.isBraking);
     }
 
     getSpeed(): number {
