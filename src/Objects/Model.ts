@@ -128,11 +128,11 @@ export class Model {
         }
     }
 
-    public update(deltaTime: number, speed: number, isTurning: boolean = false, isBraking: boolean = false): void {
+    public update(deltaTime: number, speed: number, isDrifting: boolean = false, isBraking: boolean = false): void {
         if (!this.modelMesh || !this.modelBody) return;
 
         if (this.animationAction) {
-            if (Math.abs(speed) > 0.1) {
+            if (Math.abs(speed) > 0.1 && !isBraking) {
                 this.animationAction.paused = false;
                 this.animationAction.timeScale = Math.abs(speed) * 2;
             } else {
@@ -140,6 +140,7 @@ export class Model {
                 this.animationAction.time = 0;
             }
         }
+
 
         this.modelMesh.position.copy(this.modelBody.position);
 
@@ -157,7 +158,7 @@ export class Model {
 
         const minSpeedForDust = 0.1;
 
-        if (Math.abs(speed) > minSpeedForDust && (isTurning || isBraking)) {
+        if (Math.abs(speed) > minSpeedForDust && (isDrifting || isBraking)) {
             const spawnPos = new THREE.Vector3()
                 .copy(this.modelMesh.position)
 
