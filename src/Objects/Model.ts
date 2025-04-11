@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as CANNON from 'cannon-es';
 import { SoundController } from '../controls/SoundController';
+import { Particle } from './Particle';
 
 export interface CollisionEvent {
     type: string;
@@ -17,6 +18,7 @@ export class Model {
     private animationAction: THREE.AnimationAction | null = null;
     private soundController: SoundController;
     private shakeTime: number = 0;
+    private dustSystem: Particle;
 
     private collisionListeners: ((event: CollisionEvent) => void)[] = [];
 
@@ -24,6 +26,7 @@ export class Model {
         this.scene = scene;
         this.world = world;
         this.soundController = soundController;
+        this.dustSystem = new Particle(scene);
     }
 
     public addCollisionListener(callback: (event: CollisionEvent) => void): void {
@@ -108,9 +111,6 @@ export class Model {
         quat.setFromAxisAngle(new CANNON.Vec3(0, -1, 0), Math.PI / 2);
 
         this.modelBody.quaternion.copy(quat);
-
-
-
         this.modelBody.addShape(shape);
         (this.modelBody as any).userData = { type: "jeep" };
 
@@ -123,14 +123,12 @@ export class Model {
         const otherBody = event.body;
 
         if ((otherBody as any).userData?.type === "wall") {
-            console.log("🚧 Collision détectée avec un mur !");
             this.soundController.play("big_collision");
-
             this.emitCollisionEvent("wall");
         }
     }
 
-    public update(deltaTime: number, speed: number): void {
+    public update(deltaTime: number, speed: number, isTurning: boolean = false): void {
         if (!this.modelMesh || !this.modelBody) return;
 
         if (this.animationAction) {
@@ -156,6 +154,17 @@ export class Model {
         if (this.mixer) {
             this.mixer.update(deltaTime);
         }
+
+        const minSpeedForDust = 0.1;
+
+        if (Math.abs(speed) > minSpeedForDust && isTurning) {
+            const spawnPos = new THREE.Vector3()
+                .copy(this.modelMesh.position)
+
+            this.dustSystem.spawn(spawnPos);
+        }
+
+        this.dustSystem.update(deltaTime);
     }
 
     public getPhysicsBody(): CANNON.Body | null {
