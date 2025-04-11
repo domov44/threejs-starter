@@ -128,7 +128,7 @@ export class Model {
         }
     }
 
-    public update(deltaTime: number, speed: number, isTurning: boolean = false): void {
+    public update(deltaTime: number, speed: number, isTurning: boolean = false, isBraking: boolean = false): void {
         if (!this.modelMesh || !this.modelBody) return;
 
         if (this.animationAction) {
@@ -157,7 +157,7 @@ export class Model {
 
         const minSpeedForDust = 0.1;
 
-        if (Math.abs(speed) > minSpeedForDust && isTurning) {
+        if (Math.abs(speed) > minSpeedForDust && (isTurning || isBraking)) {
             const spawnPos = new THREE.Vector3()
                 .copy(this.modelMesh.position)
 
