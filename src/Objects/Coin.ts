@@ -96,7 +96,6 @@ export class Coin {
             const distance = jeepBody.position.vsub(coinBody.position).length();
             if (distance < 1 && !this.collected) {
                 this.collected = true;
-                console.log("Pièce ramassée : " + coinBody.position);
                 
                 this.soundController.stop("coin-collected");
                 this.soundController.play("coin-collected");
