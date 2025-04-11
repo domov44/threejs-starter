@@ -162,7 +162,12 @@ export class Model {
             const spawnPos = new THREE.Vector3()
                 .copy(this.modelMesh.position)
 
-            this.dustSystem.spawn(spawnPos);
+            const forward = new THREE.Vector3();
+            this.modelMesh.getWorldDirection(forward);
+
+
+            this.dustSystem.spawn(spawnPos, forward);
+
         }
 
         this.dustSystem.update(deltaTime);

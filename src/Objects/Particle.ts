@@ -13,10 +13,8 @@ export class Particle {
         this.texture = new THREE.TextureLoader().load('./assets/dust.avif');
     }
 
-    spawn(position: THREE.Vector3) {
-        if (this.particles.length >= this.maxParticles) {
-            return;
-        }
+    spawn(position: THREE.Vector3, direction: THREE.Vector3) {
+        if (this.particles.length >= this.maxParticles) return;
 
         const spriteMaterial = new THREE.SpriteMaterial({
             map: this.texture,
@@ -28,23 +26,22 @@ export class Particle {
         const sprite = new THREE.Sprite(spriteMaterial);
         sprite.scale.set(0.2, 0.2, 0.2);
 
+        const right = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0)).normalize();
+
         const isRight = Math.random() > 0.5;
-        const offsetX = isRight
-            ? (Math.random() * 0.3 + 0.3)
-            : -(Math.random() * 0.3 + 0.3);
+        const offsetAmount = (Math.random() * 0.3 + 0.3) * (isRight ? 1 : -1);
 
+        const finalPos = new THREE.Vector3().copy(position)
+            .add(right.multiplyScalar(offsetAmount))
+            .add(new THREE.Vector3(0, 0.1, (Math.random() - 0.5) * 0.3));
 
-        sprite.position.copy(position).add(new THREE.Vector3(
-            offsetX,
-            0.1,
-            (Math.random() - 0.5) * 0.3
-        ));
-
+        sprite.position.copy(finalPos);
         (sprite as any).life = 1.0;
 
         this.scene.add(sprite);
         this.particles.push(sprite);
     }
+
 
     update(deltaTime: number) {
         this.timer += deltaTime;
@@ -58,8 +55,9 @@ export class Particle {
                 0.5,
                 (Math.random() - 0.5) * 2
             );
+            const dummyDirection = new THREE.Vector3(0, 0, 1);
+            this.spawn(targetPosition.add(offset), dummyDirection);
 
-            this.spawn(targetPosition.add(offset));
         }
 
         for (let i = this.particles.length - 1; i >= 0; i--) {
