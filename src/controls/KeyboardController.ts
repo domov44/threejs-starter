@@ -17,7 +17,8 @@ class KeyboardController {
     private soundController: SoundController;
     private enabled: boolean = true;
     private isTurning: boolean = false;
-    private driftSoundPlaying: boolean = false; // Ajout d'une variable pour savoir si le drift est en cours
+    private driftSoundPlaying: boolean = false;
+    private isBraking: boolean = false;
 
     constructor(object: THREE.Object3D, physicsBody: CANNON.Body, soundController: SoundController) {
         this.object = object;
@@ -72,6 +73,7 @@ class KeyboardController {
     update() {
         if (!this.enabled) return;
         this.isTurning = false;
+        this.isBraking = false;
 
         const currentTime = performance.now();
         const deltaTime = (currentTime - this.lastUpdateTime) / 1000;
@@ -90,6 +92,9 @@ class KeyboardController {
 
         if (this.keys[' ']) {
             this.velocity.z *= Math.pow(1 - this.brakeForce * deltaTime, deltaTime * 60);
+            this.isBraking = true;
+        } else {
+            this.isBraking = false;
         }
 
         const speed = Math.abs(this.velocity.z);
@@ -132,6 +137,10 @@ class KeyboardController {
 
     getSpeed(): number {
         return this.velocity.z;
+    }
+
+    isBrakingVehicle(): boolean {
+        return this.isBraking;
     }
 
     isTurningVehicle(): boolean {

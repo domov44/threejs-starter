@@ -191,9 +191,9 @@ class App {
         if (import.meta.env.VITE_DEBUG_ENABLED === 'true') {
             this.cannonDebug = new CannonDebug(scene, world, true);
         }
-    
+
         Promise.all([
-            this.soundController.loadSound("motor", "/assets/audio/motor.wav", { loop: true, volume: 0 } ),
+            this.soundController.loadSound("motor", "/assets/audio/motor.wav", { loop: true, volume: 0 }),
             this.soundController.loadSound("big_collision", "/assets/audio/big_collision.wav", { loop: false, volume: 0.5 }),
             this.soundController.loadSound("coin-collected", "/assets/audio/coin.wav", { loop: false, volume: 0.08 }),
             this.soundController.loadSound("drift", "/assets/audio/drift.wav", { loop: true, volume: 0 })
@@ -207,7 +207,7 @@ class App {
             updateProgress(95);
             this.setupScene(scene, camera, renderer, world);
             updateProgress(100);
-    
+
             setTimeout(() => {
                 const progressContainer = document.getElementById('progressContainer');
                 const hero = document.getElementById('hero');
@@ -216,11 +216,11 @@ class App {
                     hero.style.display = 'none';
                 }
             }, 500);
-    
+
             this.startTimer();
         });
     }
-    
+
 
     private setupScene(
         scene: THREE.Scene,
@@ -253,10 +253,12 @@ class App {
             if (this.objectKeyboardController) {
                 this.objectKeyboardController.update();
                 const isTurning = this.objectKeyboardController.isTurningVehicle();
+                const isBraking = this.objectKeyboardController.isBrakingVehicle();
                 this.model.update(
                     deltaTime,
                     this.objectKeyboardController.getSpeed(),
-                    isTurning
+                    isTurning,
+                    isBraking
                 );
             }
             this.cameraController.update();

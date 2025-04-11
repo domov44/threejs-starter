@@ -10,7 +10,7 @@ export class Particle {
 
     constructor(scene: THREE.Scene) {
         this.scene = scene;
-        this.texture = new THREE.TextureLoader().load('./assets/dust.png');
+        this.texture = new THREE.TextureLoader().load('./assets/dust.avif');
     }
 
     spawn(position: THREE.Vector3) {
@@ -29,7 +29,10 @@ export class Particle {
         sprite.scale.set(0.2, 0.2, 0.2);
 
         const isRight = Math.random() > 0.5;
-        const offsetX = isRight ? (Math.random() * 0.3 + 0.1) : -(Math.random() * 0.3 + 0.1); 
+        const offsetX = isRight
+            ? (Math.random() * 0.3 + 0.3)
+            : -(Math.random() * 0.3 + 0.3);
+
 
         sprite.position.copy(position).add(new THREE.Vector3(
             offsetX,
@@ -51,9 +54,9 @@ export class Particle {
 
             const targetPosition = new THREE.Vector3(5, 1, 10);
             const offset = new THREE.Vector3(
-                (Math.random() - 0.5) * 2, 
+                (Math.random() - 0.5) * 2,
                 0.5,
-                (Math.random() - 0.5) * 2 
+                (Math.random() - 0.5) * 2
             );
 
             this.spawn(targetPosition.add(offset));
