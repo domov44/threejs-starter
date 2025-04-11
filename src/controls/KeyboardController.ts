@@ -70,7 +70,7 @@ class KeyboardController {
     
             playbackRate = 1.05 + normalizedSpeed * 0.15;
         } else if (isDrifting) {
-            driftVolume = normalizedSpeed * 0.5;
+            driftVolume = normalizedSpeed * 0.2;
             playbackRate = 1.0 + normalizedSpeed * 0.1;
         }
     
