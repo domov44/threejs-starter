@@ -196,7 +196,7 @@ class App {
             this.soundController.loadSound("motor", "/assets/audio/motor.wav", { loop: true, volume: 0 }),
             this.soundController.loadSound("big_collision", "/assets/audio/big_collision.wav", { loop: false, volume: 0.5 }),
             this.soundController.loadSound("coin-collected", "/assets/audio/coin.wav", { loop: false, volume: 0.08 }),
-            this.soundController.loadSound("drift", "/assets/audio/drift.wav", { loop: true, volume: 0 })
+            this.soundController.loadSound("drift", "/assets/audio/drift_loop.wav", { loop: true, volume: 0 })
         ]).then(() => {
             updateProgress(65);
             return this.map.loadMap("/assets/models/map.glb");

@@ -58,26 +58,30 @@ class KeyboardController {
 
     private playDriftSound(speed: number, isDrifting: boolean, isBraking: boolean): void {
         let driftVolume = 0;
-
+        let playbackRate = 1; 
+    
+        const normalizedSpeed = Math.min(1, speed / this.maxSpeed);
+    
         if (isBraking && speed > 0.1) {
-            const normalizedSpeed = speed / this.maxSpeed;
-
             driftVolume = Math.pow(normalizedSpeed, 1.5);
-
-            driftVolume *= Math.max(0.1, Math.min(1, 1 - speed / this.maxSpeed));
-
+            driftVolume *= Math.max(0.1, Math.min(1, 1 - normalizedSpeed));
             driftVolume = Math.max(0.4, driftVolume);
             driftVolume = Math.min(1, driftVolume);
+    
+            playbackRate = 1.05 + normalizedSpeed * 0.15;
         } else if (isDrifting) {
-            driftVolume = Math.min(1, Math.max(0, speed / this.maxSpeed));
+            driftVolume = normalizedSpeed * 0.5;
+            playbackRate = 1.0 + normalizedSpeed * 0.1;
         }
-
+    
         if (isDrifting || isBraking) {
             if (!this.driftSoundPlaying) {
                 this.driftSoundPlaying = true;
                 this.soundController.play("drift");
             }
+    
             this.soundController.setVolume("drift", driftVolume);
+            this.soundController.setPlaybackRate("drift", playbackRate);
         } else {
             if (this.driftSoundPlaying) {
                 this.driftSoundPlaying = false;
@@ -85,7 +89,7 @@ class KeyboardController {
             }
         }
     }
-
+    
     update() {
         if (!this.enabled) return;
         this.isDrifting = false;
