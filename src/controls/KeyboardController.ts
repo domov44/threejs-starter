@@ -16,6 +16,8 @@ class KeyboardController {
     private lastUpdateTime: number;
     private soundController: SoundController;
     private enabled: boolean = true;
+    private isTurning: boolean = false;
+    private driftSoundPlaying: boolean = false; // Ajout d'une variable pour savoir si le drift est en cours
 
     constructor(object: THREE.Object3D, physicsBody: CANNON.Body, soundController: SoundController) {
         this.object = object;
@@ -51,8 +53,25 @@ class KeyboardController {
         this.enabled = true;
     }
 
+    private playDriftSound(speed: number, isTurning: boolean): void {
+        const driftVolume = Math.min(1, Math.max(0, speed / this.maxSpeed));
+        if (isTurning) {
+            if (!this.driftSoundPlaying) {
+                this.driftSoundPlaying = true;
+                this.soundController.play("drift");
+            }
+            this.soundController.setVolume("drift", driftVolume);
+        } else {
+            if (this.driftSoundPlaying) {
+                this.driftSoundPlaying = false;
+                this.soundController.stop("drift");
+            }
+        }
+    }
+
     update() {
         if (!this.enabled) return;
+        this.isTurning = false;
 
         const currentTime = performance.now();
         const deltaTime = (currentTime - this.lastUpdateTime) / 1000;
@@ -82,11 +101,13 @@ class KeyboardController {
                 const rotationY = new CANNON.Quaternion();
                 rotationY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), rotationAmount);
                 this.physicsBody.quaternion = rotationY.mult(this.physicsBody.quaternion);
+                this.isTurning = true;
             } else if (this.keys['d'] || this.keys['D'] || this.keys['ArrowRight']) {
                 const rotationAmount = -this.turnSpeed * deltaTime;
                 const rotationY = new CANNON.Quaternion();
                 rotationY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), rotationAmount);
                 this.physicsBody.quaternion = rotationY.mult(this.physicsBody.quaternion);
+                this.isTurning = true;
             }
         }
 
@@ -105,10 +126,16 @@ class KeyboardController {
 
         this.soundController.setVolume("motor", volume);
         this.soundController.setPlaybackRate("motor", pitch);
+
+        this.playDriftSound(speed, this.isTurning);
     }
 
     getSpeed(): number {
         return this.velocity.z;
+    }
+
+    isTurningVehicle(): boolean {
+        return this.isTurning;
     }
 
     stop() {

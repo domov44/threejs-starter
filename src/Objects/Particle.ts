@@ -4,7 +4,7 @@ export class Particle {
     private scene: THREE.Scene;
     private particles: THREE.Sprite[] = [];
     private texture: THREE.Texture;
-    private maxParticles = 5;
+    private maxParticles = 30;
     private timer = 0;
     private spawnInterval = 0.2;
 

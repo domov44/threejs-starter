@@ -123,13 +123,12 @@ export class Model {
         const otherBody = event.body;
 
         if ((otherBody as any).userData?.type === "wall") {
-            console.log("🚧 Collision détectée avec un mur !");
             this.soundController.play("big_collision");
             this.emitCollisionEvent("wall");
         }
     }
 
-    public update(deltaTime: number, speed: number): void {
+    public update(deltaTime: number, speed: number, isTurning: boolean = false): void {
         if (!this.modelMesh || !this.modelBody) return;
 
         if (this.animationAction) {
@@ -156,13 +155,14 @@ export class Model {
             this.mixer.update(deltaTime);
         }
 
-        if (Math.abs(speed) > 0.1) {
-            const carQuaternion = this.modelMesh.quaternion.clone();
-            const backward = new THREE.Vector3(0, 0, 1).applyQuaternion(carQuaternion).normalize();
-            const spawnPos = new THREE.Vector3().copy(this.modelMesh.position).add(backward.multiplyScalar(-0.6));
+        const minSpeedForDust = 0.1;
+
+        if (Math.abs(speed) > minSpeedForDust && isTurning) {
+            const spawnPos = new THREE.Vector3()
+                .copy(this.modelMesh.position)
+
             this.dustSystem.spawn(spawnPos);
         }
-
 
         this.dustSystem.update(deltaTime);
     }
