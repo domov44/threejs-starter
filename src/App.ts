@@ -252,12 +252,12 @@ class App {
             this.lastTime = currentTime;
             if (this.objectKeyboardController) {
                 this.objectKeyboardController.update();
-                const isTurning = this.objectKeyboardController.isTurningVehicle();
+                const isDrifting = this.objectKeyboardController.isDriftingVehicle();
                 const isBraking = this.objectKeyboardController.isBrakingVehicle();
                 this.model.update(
                     deltaTime,
                     this.objectKeyboardController.getSpeed(),
-                    isTurning,
+                    isDrifting,
                     isBraking
                 );
             }

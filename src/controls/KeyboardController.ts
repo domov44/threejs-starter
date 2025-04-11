@@ -10,13 +10,14 @@ class KeyboardController {
     private friction: number;
     private turnSpeed: number;
     private minSpeedForTurning: number;
+    private minSpeedForDrifting: number;
     private brakeForce: number;
     private keys: { [key: string]: boolean };
     private physicsBody: CANNON.Body;
     private lastUpdateTime: number;
     private soundController: SoundController;
     private enabled: boolean = true;
-    private isTurning: boolean = false;
+    private isDrifting: boolean = false;
     private driftSoundPlaying: boolean = false;
     private isBraking: boolean = false;
 
@@ -28,6 +29,7 @@ class KeyboardController {
         this.friction = 0.95;
         this.turnSpeed = 2;
         this.minSpeedForTurning = 0.1;
+        this.minSpeedForDrifting = 2;
         this.brakeForce = 3;
         this.keys = {};
         this.physicsBody = physicsBody;
@@ -54,9 +56,23 @@ class KeyboardController {
         this.enabled = true;
     }
 
-    private playDriftSound(speed: number, isTurning: boolean, isBraking: boolean): void {
-        const driftVolume = Math.min(1, Math.max(0, speed / this.maxSpeed));
-        if (isTurning || isBraking) {
+    private playDriftSound(speed: number, isDrifting: boolean, isBraking: boolean): void {
+        let driftVolume = 0;
+
+        if (isBraking && speed > 0.1) {
+            const normalizedSpeed = speed / this.maxSpeed;
+
+            driftVolume = Math.pow(normalizedSpeed, 1.5);
+
+            driftVolume *= Math.max(0.1, Math.min(1, 1 - speed / this.maxSpeed));
+
+            driftVolume = Math.max(0.4, driftVolume);
+            driftVolume = Math.min(1, driftVolume);
+        } else if (isDrifting) {
+            driftVolume = Math.min(1, Math.max(0, speed / this.maxSpeed));
+        }
+
+        if (isDrifting || isBraking) {
             if (!this.driftSoundPlaying) {
                 this.driftSoundPlaying = true;
                 this.soundController.play("drift");
@@ -72,7 +88,7 @@ class KeyboardController {
 
     update() {
         if (!this.enabled) return;
-        this.isTurning = false;
+        this.isDrifting = false;
         this.isBraking = false;
 
         const currentTime = performance.now();
@@ -106,13 +122,17 @@ class KeyboardController {
                 const rotationY = new CANNON.Quaternion();
                 rotationY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), rotationAmount);
                 this.physicsBody.quaternion = rotationY.mult(this.physicsBody.quaternion);
-                this.isTurning = true;
+                if (speed > this.minSpeedForDrifting) {
+                    this.isDrifting = true;
+                }
             } else if (this.keys['d'] || this.keys['D'] || this.keys['ArrowRight']) {
                 const rotationAmount = -this.turnSpeed * deltaTime;
                 const rotationY = new CANNON.Quaternion();
                 rotationY.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), rotationAmount);
                 this.physicsBody.quaternion = rotationY.mult(this.physicsBody.quaternion);
-                this.isTurning = true;
+                if (speed > this.minSpeedForDrifting) {
+                    this.isDrifting = true;
+                }
             }
         }
 
@@ -132,7 +152,7 @@ class KeyboardController {
         this.soundController.setVolume("motor", volume);
         this.soundController.setPlaybackRate("motor", pitch);
 
-        this.playDriftSound(speed, this.isTurning, this.isBraking);
+        this.playDriftSound(speed, this.isDrifting, this.isBraking);
     }
 
     getSpeed(): number {
@@ -143,8 +163,8 @@ class KeyboardController {
         return this.isBraking;
     }
 
-    isTurningVehicle(): boolean {
-        return this.isTurning;
+    isDriftingVehicle(): boolean {
+        return this.isDrifting;
     }
 
     stop() {
